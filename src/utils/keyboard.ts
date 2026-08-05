@@ -8,8 +8,8 @@ export function setupKeyboard() {
 
     const k = e.key.toLowerCase();
 
-    // ⌘K / Ctrl+K → command palette
-    if ((e.metaKey || e.ctrlKey) && k === 'k') {
+    // Alt+K or ⌘K / Ctrl+K → command palette
+    if ((e.altKey || e.metaKey || e.ctrlKey) && k === 'k') {
       e.preventDefault();
       document.getElementById('cmd-palette')?.classList.add('show');
       (document.getElementById('cmd-input') as HTMLInputElement)?.focus();

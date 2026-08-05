@@ -109,7 +109,7 @@ function renderApp(): string {
   </div>
   <footer class="bar">
     <span>🐱 MIAU SURVEILLANCE FREE v3.0 — Built by cats in Germany</span>
-    <span class="keys">⌘K Palette · R Refresh · F Fullscreen · ? Help</span>
+    <span class="keys">Alt+K Palette · R Refresh · F Fullscreen · ? Help</span>
     <span id="lr">-</span>
     <span id="theme-btn" title="Toggle theme">🎨</span>
   </footer>
@@ -138,7 +138,7 @@ function renderApp(): string {
   <div class="help-box" onclick="event.stopPropagation()">
     <h3>🐱 Keyboard Shortcuts</h3>
     <table>
-      <tr><td><kbd>⌘K</kbd></td><td>Command palette</td></tr>
+      <tr><td><kbd>Alt+K</kbd></td><td>Command palette</td></tr>
       <tr><td><kbd>1</kbd>-<kbd>7</kbd></td><td>Switch layer tabs</td></tr>
       <tr><td><kbd>8</kbd></td><td>Show all layers</td></tr>
       <tr><td><kbd>R</kbd></td><td>Refresh data</td></tr>
