@@ -537,14 +537,15 @@ export async function initApp() {
   setupKeyboard();
   setupCommandPalette();
 
-  // Init new modules
-  initGrid();
-  initTerminal();
-  initVoice();
-  initEasterEggs();
+  // Init new modules (wrapped to prevent single failure from breaking everything)
+  try { initGrid(); } catch (e) { console.warn('Grid init failed:', e); }
+  try { initTerminal(); } catch (e) { console.warn('Terminal init failed:', e); }
+  try { initVoice(); } catch (e) { console.warn('Voice init failed:', e); }
+  try { initEasterEggs(); } catch (e) { console.warn('Easter eggs init failed:', e); }
 
   // Voice button
-  document.getElementById('voice-btn')!.addEventListener('click', () => toggleVoice());
+  const voiceBtn = document.getElementById('voice-btn');
+  if (voiceBtn) voiceBtn.addEventListener('click', () => toggleVoice());
 
   // Modal globals
   (window as any)._closeModal = (e?: MouseEvent) => closeModal(e);
