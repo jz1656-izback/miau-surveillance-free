@@ -21,6 +21,7 @@ import { initVoice, toggleVoice } from './voice';
 import { initEasterEggs } from './eastereggs';
 import { trackAction } from './achievements';
 import { addHistoryEvent } from './timeline';
+import { addCustomCamera, getAllCameras, getCustomCameras, removeCustomCamera, importCameras, exportCameras } from './custom-cameras';
 
 const REFRESH_INTERVAL = 60000;
 
@@ -77,6 +78,7 @@ function renderApp(): string {
       <div class="panel" id="camera-panel">
         <div class="p-title" style="color:#ff64c8">📷 CCTV FEEDS <span class="badge" id="scam">-</span>
           <button class="fav-btn" id="fav-filter" title="Show favorites">⭐</button>
+          <button class="fav-btn" id="add-cam-btn" title="Add custom camera">+</button>
           <input class="filter-inp" id="cam-filter" placeholder="Filter..." />
         </div>
         <div class="p-body" id="caml"><div class="ld">Loading cameras...</div></div>
@@ -180,6 +182,30 @@ function renderApp(): string {
 
 <div class="news-ticker" id="news-ticker">
   <div class="news-ticker-inner" id="news-ticker-inner">📰 Loading headlines...</div>
+</div>
+
+<div class="modal-overlay" id="add-cam-modal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal-box" style="width:420px" onclick="event.stopPropagation()">
+    <div class="modal-hdr"><span>📷 Add Custom Camera</span><button onclick="document.getElementById('add-cam-modal').classList.remove('show')">✕</button></div>
+    <div style="padding:14px;display:flex;flex-direction:column;gap:8px">
+      <input id="add-cam-name" placeholder="Camera name (e.g. My Backyard)" class="filter-inp" style="width:100%" />
+      <div style="display:flex;gap:8px">
+        <input id="add-cam-lat" placeholder="Latitude" class="filter-inp" style="width:50%" />
+        <input id="add-cam-lon" placeholder="Longitude" class="filter-inp" style="width:50%" />
+      </div>
+      <input id="add-cam-url" placeholder="Stream URL or YouTube link" class="filter-inp" style="width:100%" />
+      <input id="add-cam-vid" placeholder="YouTube video ID (optional)" class="filter-inp" style="width:100%" />
+      <select id="add-cam-type" class="filter-inp" style="width:100%">
+        <option value="city">City</option><option value="beach">Beach</option><option value="landmark">Landmark</option>
+        <option value="traffic">Traffic</option><option value="weather">Weather</option><option value="wildlife">Wildlife</option>
+      </select>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button id="add-cam-save" class="rfbtn" style="flex:1">Save Camera</button>
+        <button id="add-cam-import" class="rfbtn">📥 Import</button>
+        <button id="add-cam-export" class="rfbtn">📤 Export</button>
+      </div>
+    </div>
+  </div>
 </div>
 `;
 }
@@ -369,7 +395,7 @@ subscribe(() => {
   // Re-render cameras
   const filterEl = document.getElementById('cam-filter') as HTMLInputElement;
   const filterVal = filterEl?.value.toLowerCase() || state.searchQuery;
-  document.getElementById('caml')!.innerHTML = renderCameras(CAMERAS, state.filterType, favoritesOnly);
+  document.getElementById('caml')!.innerHTML = renderCameras(getAllCameras(), state.filterType, favoritesOnly);
   document.getElementById('camc')!.textContent = CAMERAS.length.toString();
   document.getElementById('scam')!.textContent = CAMERAS.length.toString();
 
@@ -546,6 +572,37 @@ export async function initApp() {
   // Voice button
   const voiceBtn = document.getElementById('voice-btn');
   if (voiceBtn) voiceBtn.addEventListener('click', () => toggleVoice());
+
+  // Add camera button
+  const addCamBtn = document.getElementById('add-cam-btn');
+  if (addCamBtn) addCamBtn.addEventListener('click', () => document.getElementById('add-cam-modal')!.classList.add('show'));
+
+  // Save custom camera
+  document.getElementById('add-cam-save')?.addEventListener('click', () => {
+    const name = (document.getElementById('add-cam-name') as HTMLInputElement).value;
+    const lat = parseFloat((document.getElementById('add-cam-lat') as HTMLInputElement).value);
+    const lon = parseFloat((document.getElementById('add-cam-lon') as HTMLInputElement).value);
+    const url = (document.getElementById('add-cam-url') as HTMLInputElement).value;
+    const vid = (document.getElementById('add-cam-vid') as HTMLInputElement).value;
+    const type = (document.getElementById('add-cam-type') as HTMLSelectElement).value as Camera['t'];
+    if (!name || !url || isNaN(lat) || isNaN(lon)) { toast('Fill all fields (name, lat, lon, url)', 3000); return; }
+    const cam: Camera = { n: name, la: lat, lo: lon, t: type, u: url, c: 'Custom' };
+    if (vid) cam.vid = vid;
+    addCustomCamera(cam);
+    document.getElementById('add-cam-modal')!.classList.remove('show');
+    // Clear form
+    ['add-cam-name','add-cam-lat','add-cam-lon','add-cam-url','add-cam-vid'].forEach(id => (document.getElementById(id) as HTMLInputElement).value = '');
+  });
+
+  // Import/export
+  document.getElementById('add-cam-import')?.addEventListener('click', () => {
+    const json = prompt('Paste camera JSON:');
+    if (json) importCameras(json);
+  });
+  document.getElementById('add-cam-export')?.addEventListener('click', () => {
+    const json = exportCameras();
+    navigator.clipboard.writeText(json).then(() => toast('Copied to clipboard!', 2000));
+  });
 
   // Modal globals
   (window as any)._closeModal = (e?: MouseEvent) => closeModal(e);

@@ -2,6 +2,7 @@ import { flyTo } from '../map/core';
 import { showOnlyLayer, showAllLayers } from '../map/layers';
 import { cycleTheme, setTheme } from '../utils/theme';
 import { toast } from './toast';
+import { addCustomCamera, getCustomCameras, exportCameras, importCameras } from './custom-cameras';
 
 const COMMANDS: Record<string, { help: string; fn: (args: string[]) => string | void }> = {
   help: {
@@ -63,6 +64,23 @@ const COMMANDS: Record<string, { help: string; fn: (args: string[]) => string | 
     help: 'Set alert (e.g. alert quake 5)',
     fn: (args) => {
       return `Alert system: use the Alerts panel (bell icon) to configure push notifications`;
+    },
+  },
+
+  cam: {
+    help: "cam add <name> <lat> <lon> <url> [yt_id] | cam list | cam export",
+    fn: (args) => {
+      if (args[0] === "list") {
+        const cams = getCustomCameras();
+        if (cams.length === 0) return "No custom cameras. Add: cam add <name> <lat> <lon> <url>";
+        return cams.map((c, i) => "  [" + i + "] " + c.n + " (" + c.la + ", " + c.lo + ") - " + c.u).join("\n");
+      }
+      if (args[0] === "export") { navigator.clipboard.writeText(exportCameras()); return "Copied!"; }
+      if (args[0] === "add" && args.length >= 5) {
+        addCustomCamera({ n: args[1]!, la: +args[2]!, lo: +args[3]!, t: "city", u: args[4]!, c: "Custom", vid: args[5] });
+        return "Camera '" + args[1] + "' added!";
+      }
+      return "Usage: cam add <name> <lat> <lon> <url> [yt_id] | cam list | cam export";
     },
   },
   clear: {
