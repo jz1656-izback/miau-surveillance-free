@@ -4,13 +4,23 @@ import { CONFLICTS } from '../data/conflicts';
 import { MILITARY } from '../data/military';
 import { initMap, flyTo, fitBounds, getMap } from '../map/core';
 import { createLayer, layers, toggleLayer, showOnlyLayer, showAllLayers } from '../map/layers';
-import { createCameraMarker, createConflictMarker, createMilitaryMarker, createFlightMarker, createQuakeMarker, createDisasterMarker, createWeatherMarker, clearMarkers, embedUrl } from '../map/markers';
+import { createCameraMarker, createConflictMarker, createMilitaryMarker, createFlightMarker, createQuakeMarker, createDisasterMarker, createWeatherMarker, createWildfireMarker, createIssMarker, createLightningMarker, clearMarkers, embedUrl } from '../map/markers';
 import { fetchFlights } from '../api/flights';
 import { fetchQuakes, fetchDisasters, fetchWeather } from '../api/data';
+import { fetchWildfires } from '../api/wildfires';
+import { fetchIssPosition } from '../api/iss';
+import { fetchLightning } from '../api/lightning';
+import { fetchNews } from '../api/news';
 import { openModal, closeModal } from './modal';
 import { toast } from './toast';
 import { setupKeyboard } from '../utils/keyboard';
 import { initTheme, cycleTheme, setTheme } from '../utils/theme';
+import { initGrid } from './grid';
+import { initTerminal } from './terminal';
+import { initVoice, toggleVoice } from './voice';
+import { initEasterEggs } from './eastereggs';
+import { trackAction } from './achievements';
+import { addHistoryEvent } from './timeline';
 
 const REFRESH_INTERVAL = 60000;
 
@@ -31,10 +41,17 @@ function renderApp(): string {
       <button class="tab" data-layer="quake">QUAKES</button>
       <button class="tab" data-layer="disaster">DISASTERS</button>
       <button class="tab" data-layer="weather">WEATHER</button>
+      <button class="tab" data-layer="wildfire">🔥 FIRES</button>
+      <button class="tab" data-layer="iss">🛰 ISS</button>
+      <button class="tab" data-layer="lightning">⚡ STRIKES</button>
     </div>
     <div class="stats" id="stats">
       <span>⚔<b id="cc">0</b></span><span>★<b id="cm">0</b></span><span>📷<b id="camc">0</b></span>
       <span>✈<b id="cf">0</b></span><span>🌍<b id="cq">0</b></span><span>⚠<b id="cd">0</b></span><span>🌤<b id="cw">0</b></span>
+      <span>🔥<b id="cfire">0</b></span><span>🛰<b id="ciss">-</b></span><span>⚡<b id="clit">0</b></span>
+      <button class="rfbtn" id="grid-btn" title="Grid View">🖥</button>
+      <button class="rfbtn" id="terminal-btn" title="Terminal">⌨️</button>
+      <button class="rfbtn" id="voice-btn" title="Voice">🔇</button>
       <button class="rfbtn" id="rfbtn" title="Refresh (R)">↻</button>
       <span class="live" id="live-dot">● LIVE</span>
     </div>
@@ -50,6 +67,9 @@ function renderApp(): string {
         <button class="on" data-layer="quake">🌍 Quakes</button>
         <button class="on" data-layer="disaster">⚠ Disasters</button>
         <button class="on" data-layer="weather">🌤 Weather</button>
+        <button class="on" data-layer="wildfire">🔥 Wildfires</button>
+        <button class="on" data-layer="iss">🛰 ISS</button>
+        <button class="on" data-layer="lightning">⚡ Lightning</button>
       </div>
     </div>
     <div class="sidebar" id="sidebar">
@@ -76,6 +96,14 @@ function renderApp(): string {
       <div class="panel" id="weather-panel">
         <div class="p-title" style="color:#0cc">🌤 WEATHER <span class="badge" id="sw">-</span></div>
         <div class="p-body" id="wl"><div class="ld">Fetching Open-Meteo...</div></div>
+      </div>
+      <div class="panel" id="wildfire-panel">
+        <div class="p-title" style="color:#ff4400">🔥 WILDFIRES (NASA FIRMS) <span class="badge" id="sfire">-</span></div>
+        <div class="p-body" id="firel"><div class="ld">Fetching NASA FIRMS...</div></div>
+      </div>
+      <div class="panel" id="iss-panel">
+        <div class="p-title" style="color:#fff">🛰 ISS TRACKER <span class="badge" id="siss">-</span></div>
+        <div class="p-body" id="issl"><div class="ld">Tracking ISS...</div></div>
       </div>
     </div>
   </div>
@@ -121,6 +149,37 @@ function renderApp(): string {
     </table>
     <p style="margin-top:8px;color:rgba(130,150,180,0.3);font-size:8px">Made in Germany. Written by cats.</p>
   </div>
+</div>
+
+<div class="grid-overlay" id="grid-overlay" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="grid-hdr">
+    <span>🖥 Multi-Camera Grid</span>
+    <div>
+      <button id="grid-4">4</button><button id="grid-9">9</button><button id="grid-16">16</button>
+      <button id="grid-close">✕</button>
+    </div>
+  </div>
+  <div class="grid-container" id="grid-container"></div>
+</div>
+
+<div class="terminal-overlay" id="terminal-overlay">
+  <div class="terminal-box">
+    <div class="terminal-hdr">🐱 MIAU SHELL v4.0 — Type "help" for commands</div>
+    <div class="terminal-output" id="term-output">
+      <div>Miau Surveillance Shell v4.0</div>
+      <div>Built by cats. Made in Germany.</div>
+      <div>Type <span style="color:#0f0">help</span> for available commands.</div>
+      <div>────────────────────────────────────────</div>
+    </div>
+    <div class="terminal-input-line">
+      <span style="color:#0f0">miau@surveillance:~$</span>
+      <input type="text" class="terminal-input" id="term-input" autocomplete="off" spellcheck="false" />
+    </div>
+  </div>
+</div>
+
+<div class="news-ticker" id="news-ticker">
+  <div class="news-ticker-inner" id="news-ticker-inner">📰 Loading headlines...</div>
 </div>
 `;
 }
@@ -380,6 +439,50 @@ async function refreshAll() {
     document.getElementById('sw')!.textContent = weather.length.toString();
   } catch (e) { /* silent */ }
 
+  // Wildfires
+  try {
+    const fireLayer = layers.get('wildfire')!;
+    clearMarkers(fireLayer.group);
+    const fires = await fetchWildfires();
+    fires.slice(0, 500).forEach(f => createWildfireMarker(f.lat, f.lon, f.brightness, f.confidence, f.satellite).addTo(fireLayer.group));
+    document.getElementById('cfire')!.textContent = fires.length.toString();
+    document.getElementById('sfire')!.textContent = fires.length.toString();
+    document.getElementById('firel')!.innerHTML = `<div class="section-hd">🔥 ACTIVE FIRES (${fires.length})</div>` +
+      fires.slice(0, 10).map(f => `<div class="item"><div class="i-h"><span class="i-t o">🔥</span><span class="i-n">${f.brightness.toFixed(0)}K · ${f.confidence}%</span></div><div class="i-s">${f.satellite} · ${f.acqDate}</div></div>`).join('');
+    fires.filter(f => f.confidence > 90).forEach(f => addHistoryEvent({ time: Date.now(), type: 'wildfire', label: `Wildfire ${f.brightness.toFixed(0)}K`, lat: f.lat, lon: f.lon }));
+  } catch (e) { /* silent */ }
+
+  // ISS
+  try {
+    const issLayer = layers.get('iss')!;
+    clearMarkers(issLayer.group);
+    const iss = await fetchIssPosition();
+    if (iss) {
+      createIssMarker(iss.lat, iss.lon, iss.timestamp).addTo(issLayer.group);
+      document.getElementById('ciss')!.textContent = '📍';
+      document.getElementById('siss')!.textContent = 'live';
+      document.getElementById('issl')!.innerHTML = `<div class="section-hd">🛰 ISS CURRENT POSITION</div>
+        <div class="item"><div class="i-h"><span class="i-t b">🛰</span><span class="i-n">ISS</span></div><div class="i-s">Lat: ${iss.lat.toFixed(2)} · Lon: ${iss.lon.toFixed(2)} · ${new Date(iss.timestamp * 1000).toLocaleTimeString()}</div><button class="fly-btn" data-lat="${iss.lat}" data-lon="${iss.lon}">📍 Track ISS</button></div>`;
+    }
+  } catch (e) { /* silent */ }
+
+  // Lightning
+  try {
+    const litLayer = layers.get('lightning')!;
+    clearMarkers(litLayer.group);
+    const strikes = await fetchLightning();
+    strikes.forEach(s => createLightningMarker(s.lat, s.lon, s.time).addTo(litLayer.group));
+    document.getElementById('clit')!.textContent = strikes.length.toString();
+  } catch (e) { /* silent */ }
+
+  // News
+  try {
+    const news = await fetchNews();
+    if (news.length > 0) {
+      document.getElementById('news-ticker-inner')!.innerHTML = '📰 ' + news.map(n => `<span class="news-item">${n.title}</span>`).join(' · ');
+    }
+  } catch (e) { /* silent */ }
+
   document.getElementById('lr')!.textContent = `Last: ${new Date().toLocaleTimeString()} (${Date.now() - start}ms)`;
   document.getElementById('live-dot')!.textContent = '● LIVE';
   countdown = REFRESH_INTERVAL;
@@ -405,6 +508,9 @@ export async function initApp() {
   createLayer('quake', false);
   createLayer('disaster', false);
   createLayer('weather', false);
+  createLayer('wildfire', true);
+  createLayer('iss', false);
+  createLayer('lightning', false);
 
   // Static markers
   const cameraLayer = layers.get('camera')!;
@@ -430,6 +536,15 @@ export async function initApp() {
   bindSidebarClicks();
   setupKeyboard();
   setupCommandPalette();
+
+  // Init new modules
+  initGrid();
+  initTerminal();
+  initVoice();
+  initEasterEggs();
+
+  // Voice button
+  document.getElementById('voice-btn')!.addEventListener('click', () => toggleVoice());
 
   // Modal globals
   (window as any)._closeModal = (e?: MouseEvent) => closeModal(e);

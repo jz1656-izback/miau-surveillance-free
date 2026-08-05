@@ -122,6 +122,50 @@ export function createWeatherMarker(lat: number, lon: number, cityName: string, 
   }).bindPopup(`<b>${emoji} ${cityName}</b><br>Temp: ${temp != null ? temp.toFixed(1) + '°C' : '?'}<br>Wind: ${wind != null ? wind.toFixed(1) + ' km/h' : '?'}`);
 }
 
+export function createWildfireMarker(lat: number, lon: number, brightness: number, confidence: number, satellite: string): L.CircleMarker {
+  const r = Math.max(3, brightness / 50);
+  return L.circleMarker([lat, lon], {
+    radius: r,
+    color: confidence > 80 ? '#ff2000' : confidence > 50 ? '#ff6600' : '#ffaa00',
+    fillColor: confidence > 80 ? '#ff2000' : confidence > 50 ? '#ff6600' : '#ffaa00',
+    fillOpacity: 0.5,
+    weight: 1,
+  }).bindPopup(`<b>🔥 Wildfire</b><br>Brightness: ${brightness.toFixed(1)}K<br>Confidence: ${confidence}%<br>Satellite: ${satellite}`);
+}
+
+export function createIssMarker(lat: number, lon: number, timestamp: number): L.Marker {
+  return L.marker([lat, lon], {
+    icon: L.divIcon({
+      className: '',
+      html: '<div style="font-size:18px;filter:drop-shadow(0 0 6px #fff)">🛰</div>',
+      iconSize: [20, 20],
+      iconAnchor: [10, 10],
+    }),
+  }).bindPopup(`<b>🛰 International Space Station</b><br>Lat: ${lat.toFixed(2)}<br>Lon: ${lon.toFixed(2)}<br>Updated: ${new Date(timestamp * 1000).toLocaleTimeString()}`);
+}
+
+export function createLightningMarker(lat: number, lon: number, time: number): L.CircleMarker {
+  return L.circleMarker([lat, lon], {
+    radius: 5,
+    color: '#ffff00',
+    fillColor: '#ffff00',
+    fillOpacity: 0.8,
+    weight: 0,
+  }).bindPopup(`<b>⚡ Lightning strike</b><br>Time: ${new Date(time).toLocaleTimeString()}`);
+}
+
+export function createAirQualityMarker(lat: number, lon: number, city: string, aqi: number, pm25: number): L.Marker {
+  const col = aqi > 150 ? '#ff2020' : aqi > 100 ? '#ff8800' : aqi > 50 ? '#ffcc00' : '#00cc44';
+  return L.marker([lat, lon], {
+    icon: L.divIcon({
+      className: '',
+      html: `<div style="background:${col};color:#000;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">${aqi}</div>`,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
+    }),
+  }).bindPopup(`<b>🌫 ${city}</b><br>AQI: ${aqi}<br>PM2.5: ${pm25.toFixed(1)} µg/m³<br><span style="color:${col}">${aqi > 150 ? 'Hazardous' : aqi > 100 ? 'Unhealthy' : aqi > 50 ? 'Moderate' : 'Good'}</span>`);
+}
+
 export function clearMarkers(group: L.LayerGroup | L.MarkerClusterGroup) {
   if ('clearLayers' in group) {
     (group as L.MarkerClusterGroup).clearLayers();
