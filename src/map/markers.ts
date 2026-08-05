@@ -17,7 +17,7 @@ function closePopup() {
 
 export function embedUrl(cam: Camera): string | null {
   if (cam.vid) return `https://www.youtube.com/embed/${cam.vid}?autoplay=1&mute=1&playsinline=1`;
-  if (cam.u.includes('earthcam.com')) return null;
+  if (cam.u.includes('earthcam.com')) return cam.u.replace(/\/$/, '') + '?embed=1&autoplay=1';
   return cam.u;
 }
 
@@ -28,7 +28,8 @@ export function createCameraMarker(cam: Camera, onClick?: () => void): L.Marker 
 
   let vidHTML: string;
   if (eu) {
-    vidHTML = `<div class="cam-vid-wrap"><div class="vid-loading">▶ Live Feed</div><iframe src="${eu}" allow="autoplay; encrypted-media" allowfullscreen onload="this.previousElementSibling.style.display='none'" onerror="this.previousElementSibling.textContent='⚠ Cannot load'"></iframe></div>`;
+    const isEC = !cam.vid && cam.u.includes('earthcam');
+    vidHTML = `<div class="cam-vid-wrap${isEC ? ' cam-ec' : ''}"><div class="vid-loading">${cam.vid ? '▶ YouTube Live' : '🔄 EarthCam Live'}</div><iframe src="${eu}" allow="autoplay; encrypted-media" allowfullscreen onload="this.previousElementSibling.style.display='none'" onerror="this.previousElementSibling.textContent='⚠ Cannot load'"></iframe></div>`;
   } else {
     vidHTML = `<div class="cam-vid-wrap cam-poster"><div style="font-size:36px">📷</div><div style="font-size:9px;color:rgba(130,150,180,0.4);text-align:center">Live feed available<br>on EarthCam.com</div><a class="cam-link" href="${cam.u}" target="_blank" style="font-size:10px;padding:4px 12px">▶ Open Live Feed</a></div>`;
   }
@@ -42,7 +43,7 @@ export function createCameraMarker(cam: Camera, onClick?: () => void): L.Marker 
     }),
   });
 
-  const popup = L.popup({ maxWidth: 340, closeButton: true })
+  const popup = L.popup({ maxWidth: eu && !cam.vid && cam.u.includes('earthcam') ? 500 : 340, closeButton: true })
     .setContent(`<b>📷 ${cam.n}</b><br><span style="font-size:8px;color:rgba(130,150,180,0.4)">${cam.c} · ${cam.t}</span>${vidHTML}<a class="cam-link" href="${cam.u}" target="_blank">🔗 Open Full Page →</a>`);
 
   m.bindPopup(popup);
