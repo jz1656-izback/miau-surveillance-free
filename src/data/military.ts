@@ -1,0 +1,58 @@
+export interface Military {
+  n: string;   // name
+  la: number;  // latitude
+  lo: number;  // longitude
+  t: 'nuclear' | 'base';  // type
+  c: string;   // country code
+}
+
+export const MILITARY: Military[] = [
+  { n: "Fort Liberty", la: 35.13, lo: -79, t: "base", c: "US" },
+  { n: "Ramstein AB", la: 49.44, lo: 7.6, t: "base", c: "US" },
+  { n: "Camp Humphreys", la: 36.96, lo: 127.03, t: "base", c: "US" },
+  { n: "Diego Garcia", la: -7.3, lo: 72.4, t: "base", c: "US" },
+  { n: "Yulin Naval Base", la: 18.2, lo: 109.5, t: "base", c: "CN" },
+  { n: "Severomorsk", la: 69.07, lo: 33.4, t: "base", c: "RU" },
+  { n: "Portsmouth Naval", la: 50.8, lo: -1.1, t: "base", c: "UK" },
+  { n: "Toulon Naval", la: 43.1, lo: 5.9, t: "base", c: "FR" },
+  { n: "Kitsap Sub Base", la: 47.7, lo: -122.7, t: "nuclear", c: "US" },
+  { n: "Nellis AFB", la: 36.24, lo: -115.03, t: "base", c: "US" },
+  { n: "Kings Bay SSBN", la: 30.8, lo: -81.55, t: "nuclear", c: "US" },
+  { n: "Bangor SSBN", la: 47.74, lo: -122.73, t: "nuclear", c: "US" },
+  { n: "Minot AFB ICBM", la: 48.42, lo: -101.34, t: "nuclear", c: "US" },
+  { n: "Malmstrom ICBM", la: 47.5, lo: -111.18, t: "nuclear", c: "US" },
+  { n: "F.E. Warren ICBM", la: 41.13, lo: -104.87, t: "nuclear", c: "US" },
+  { n: "Dimona Nuclear", la: 31, lo: 35.14, t: "nuclear", c: "IL" },
+  { n: "Yongbyon Nuclear", la: 39.8, lo: 125.75, t: "nuclear", c: "KP" },
+  { n: "Natanz Nuclear", la: 33.72, lo: 51.73, t: "nuclear", c: "IR" },
+  { n: "INS Kadamba", la: 14.77, lo: 74.13, t: "base", c: "IN" },
+  { n: "Vladivostok Fleet", la: 43.1, lo: 131.9, t: "base", c: "RU" },
+  { n: "Norfolk Naval", la: 36.95, lo: -76.33, t: "base", c: "US" },
+  { n: "Pearl Harbor", la: 21.35, lo: -157.95, t: "base", c: "US" },
+  { n: "Guam Andersen", la: 13.44, lo: 144.65, t: "base", c: "US" },
+  { n: "Bahrain 5th Fleet", la: 26.2, lo: 50.6, t: "base", c: "US" },
+  { n: "Djibouti Camp", la: 11.55, lo: 43.15, t: "base", c: "US" },
+  { n: "Incirlik AB", la: 37, lo: 35.43, t: "base", c: "TR" },
+  { n: "Aviano AB", la: 46.03, lo: 12.6, t: "base", c: "IT" },
+  { n: "Rota Naval", la: 36.62, lo: -6.33, t: "base", c: "ES" },
+  { n: "Souda Bay", la: 35.48, lo: 24.12, t: "base", c: "GR" },
+  { n: "Yokosuka Fleet", la: 35.28, lo: 139.67, t: "base", c: "JP" },
+  { n: "Okinawa Kadena", la: 26.3, lo: 127.8, t: "base", c: "US" },
+  { n: "Thule AB", la: 76.53, lo: -68.7, t: "base", c: "US" },
+  { n: "Ascension RAF", la: -7.93, lo: -14.4, t: "base", c: "UK" },
+  { n: "Polyarny Sub", la: 69.2, lo: 33.45, t: "nuclear", c: "RU" },
+  { n: "Faslane Sub", la: 56.06, lo: -4.82, t: "nuclear", c: "UK" },
+  { n: "Pantex Plant", la: 35.3, lo: -101.56, t: "nuclear", c: "US" },
+  { n: "Los Alamos", la: 35.88, lo: -106.3, t: "nuclear", c: "US" },
+  { n: "LLNL Lab", la: 37.68, lo: -121.7, t: "nuclear", c: "US" },
+  { n: "Savannah River", la: 33.3, lo: -81.7, t: "nuclear", c: "US" },
+  { n: "Yokota AB", la: 35.75, lo: 139.35, t: "base", c: "JP" },
+  { n: "Misawa AB", la: 40.7, lo: 141.38, t: "base", c: "JP" },
+  { n: "Osan AB", la: 37.1, lo: 127.03, t: "base", c: "KR" },
+  { n: "Pine Gap", la: -23.8, lo: 133.74, t: "base", c: "AU" },
+  { n: "Petropavlovsk", la: 53.02, lo: 158.65, t: "base", c: "RU" },
+  { n: "Kaliningrad", la: 54.7, lo: 20.5, t: "base", c: "RU" },
+  { n: "Tartus Naval", la: 34.9, lo: 35.87, t: "base", c: "RU" },
+  { n: "Hmeymim AB", la: 35.4, lo: 35.95, t: "base", c: "RU" },
+  { n: "Sary Shagan", la: 46.38, lo: 72.87, t: "base", c: "KZ" },
+];

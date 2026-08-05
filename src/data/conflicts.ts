@@ -1,0 +1,61 @@
+export interface Conflict {
+  n: string;   // name
+  la: number;  // latitude
+  lo: number;  // longitude
+  i: 'high' | 'medium' | 'low';  // intensity
+  p: string;   // parties
+  s: number;   // since year
+}
+
+export const CONFLICTS: Conflict[] = [
+  { n: "Ukraine War", la: 48.5, lo: 31.5, i: "high", p: "Russia vs Ukraine", s: 2022 },
+  { n: "Gaza Strip", la: 31.5, lo: 34.45, i: "high", p: "Israel vs Hamas", s: 2023 },
+  { n: "Sudan Civil War", la: 15.5, lo: 32.5, i: "high", p: "SAF vs RSF", s: 2023 },
+  { n: "Myanmar Civil War", la: 22, lo: 96, i: "high", p: "Junta vs PDF/EAO", s: 2021 },
+  { n: "Sahel Insurgency", la: 15, lo: 2, i: "high", p: "States vs JNIM/ISGS", s: 2012 },
+  { n: "DRC Conflict", la: -2, lo: 24, i: "high", p: "DRC vs M23/ADF", s: 1996 },
+  { n: "Yemen Civil War", la: 15.5, lo: 44, i: "high", p: "Houthis vs Coalition", s: 2014 },
+  { n: "Syria Civil War", la: 35, lo: 38, i: "medium", p: "Assad vs rebels", s: 2011 },
+  { n: "Somalia", la: 2, lo: 45, i: "medium", p: "Govt vs Al-Shabaab", s: 1991 },
+  { n: "Haiti Crisis", la: 19, lo: -72.5, i: "medium", p: "Gangs vs State", s: 2021 },
+  { n: "Kashmir", la: 34, lo: 76, i: "medium", p: "India vs Pakistan", s: 1947 },
+  { n: "Colombia", la: 3, lo: -74, i: "medium", p: "Govt vs ELN/FARC", s: 1964 },
+  { n: "Afghanistan", la: 34, lo: 66, i: "medium", p: "Taliban vs IS-K", s: 2021 },
+  { n: "Nagorno-Karabakh", la: 39.8, lo: 46.8, i: "low", p: "AZ vs AM", s: 2023 },
+  { n: "South China Sea", la: 12, lo: 116, i: "low", p: "Multiple claimants", s: 2010 },
+  { n: "Taiwan Strait", la: 24, lo: 121, i: "low", p: "China vs Taiwan", s: 1949 },
+  { n: "North Korea", la: 39, lo: 126, i: "low", p: "DPRK vs ROK/US", s: 1953 },
+  { n: "Western Sahara", la: 25, lo: -13, i: "low", p: "MA vs Polisario", s: 1975 },
+  { n: "Libya", la: 27, lo: 17, i: "low", p: "GNA vs LNA", s: 2014 },
+  { n: "Tigray (Ethiopia)", la: 13.5, lo: 39.5, i: "medium", p: "Govt vs TPLF", s: 2020 },
+  { n: "Burkina Faso", la: 12.2, lo: -1.5, i: "high", p: "Govt vs JNIM", s: 2015 },
+  { n: "Mali", la: 17, lo: -3, i: "high", p: "Govt vs JNIM", s: 2012 },
+  { n: "Niger", la: 17, lo: 9, i: "medium", p: "Govt vs ISGS", s: 2015 },
+  { n: "Mozambique", la: -12, lo: 38, i: "high", p: "Govt vs ISIS-M", s: 2017 },
+  { n: "CAR", la: 6.5, lo: 21, i: "medium", p: "Govt vs rebels", s: 2012 },
+  { n: "Cameroon", la: 5, lo: 12, i: "medium", p: "Govt vs separatists", s: 2017 },
+  { n: "Iraq", la: 33, lo: 44, i: "medium", p: "Govt vs ISIS", s: 2014 },
+  { n: "Lebanon", la: 33.8, lo: 35.8, i: "low", p: "Hezbollah tensions", s: 2023 },
+  { n: "Balochistan (PK)", la: 28, lo: 66, i: "medium", p: "PK vs BLA", s: 2004 },
+  { n: "Mindanao (PH)", la: 7.5, lo: 125, i: "medium", p: "PH vs Islamists", s: 1969 },
+  { n: "Thailand Deep South", la: 6.3, lo: 101.5, i: "low", p: "TH vs separatists", s: 2004 },
+  { n: "PKK Conflict (TR)", la: 38, lo: 40, i: "medium", p: "TR vs PKK", s: 1984 },
+  { n: "Boko Haram (NG)", la: 11, lo: 13, i: "high", p: "NG vs BH/ISWAP", s: 2009 },
+  { n: "Kenya (Al-Shabaab)", la: -1, lo: 40, i: "medium", p: "KE vs Al-Shabaab", s: 2011 },
+  { n: "Chad Basin", la: 14, lo: 18, i: "low", p: "Govt vs rebels", s: 2021 },
+  { n: "Venezuela", la: 8, lo: -66, i: "low", p: "Govt vs opposition", s: 2014 },
+  { n: "Nicaragua", la: 12.5, lo: -85, i: "low", p: "Political crisis", s: 2018 },
+  { n: "Rakhine (MM)", la: 20, lo: 93, i: "high", p: "Military vs AA", s: 2023 },
+  { n: "Pakistan Taliban", la: 33.5, lo: 70.5, i: "medium", p: "PK vs TTP", s: 2007 },
+  { n: "Cabo Delgado", la: -12.5, lo: 40, i: "high", p: "MZ vs ISIS-M", s: 2017 },
+  { n: "Red Sea Crisis", la: 15, lo: 42, i: "high", p: "Houthi attacks on shipping", s: 2023 },
+  { n: "Armenia-Azerbaijan", la: 40, lo: 45, i: "low", p: "Border tensions", s: 2023 },
+  { n: "Senegal (Casamance)", la: 12.5, lo: -15, i: "low", p: "Separatist conflict", s: 1982 },
+  { n: "India Maoists", la: 20, lo: 82, i: "low", p: "Naxalite insurgency", s: 1967 },
+  { n: "Papua (ID)", la: -4, lo: 137, i: "low", p: "ID vs OPM", s: 1963 },
+  { n: "Ethiopia (Oromia)", la: 8, lo: 39, i: "medium", p: "Govt vs OLA", s: 2018 },
+  { n: "Sudan (Darfur)", la: 13, lo: 25, i: "high", p: "Tribal/RSF violence", s: 2003 },
+  { n: "Angola (Cabinda)", la: -5, lo: 12, i: "low", p: "FLEC separatists", s: 1975 },
+  { n: "Philippines (NPA)", la: 14, lo: 122, i: "low", p: "Govt vs NPA", s: 1969 },
+  { n: "Bangladesh (CHT)", la: 22.5, lo: 92, i: "low", p: "Indigenous conflict", s: 1975 },
+];

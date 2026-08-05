@@ -1,0 +1,466 @@
+import { state, notify, subscribe, saveFavorites } from '../store/state';
+import { CAMERAS, CAMERA_TYPES, Camera } from '../data/cameras';
+import { CONFLICTS } from '../data/conflicts';
+import { MILITARY } from '../data/military';
+import { initMap, flyTo, fitBounds, getMap } from '../map/core';
+import { createLayer, layers, toggleLayer, showOnlyLayer, showAllLayers } from '../map/layers';
+import { createCameraMarker, createConflictMarker, createMilitaryMarker, createFlightMarker, createQuakeMarker, createDisasterMarker, createWeatherMarker, clearMarkers, embedUrl } from '../map/markers';
+import { fetchFlights } from '../api/flights';
+import { fetchQuakes, fetchDisasters, fetchWeather } from '../api/data';
+import { openModal, closeModal } from './modal';
+import { toast } from './toast';
+import { setupKeyboard } from '../utils/keyboard';
+import { initTheme, cycleTheme, setTheme } from '../utils/theme';
+
+const REFRESH_INTERVAL = 60000;
+
+// ── Build DOM ──
+
+function renderApp(): string {
+  return `
+<div id="app">
+  <header class="hdr">
+    <div class="dot"></div>
+    <h1>🐱 MIAU SURVEILLANCE FREE</h1>
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-layer="">ALL</button>
+      <button class="tab" data-layer="conflict">CONFLICTS</button>
+      <button class="tab" data-layer="military">MILITARY</button>
+      <button class="tab" data-layer="camera">📷 CCTV</button>
+      <button class="tab" data-layer="flight">FLIGHTS</button>
+      <button class="tab" data-layer="quake">QUAKES</button>
+      <button class="tab" data-layer="disaster">DISASTERS</button>
+      <button class="tab" data-layer="weather">WEATHER</button>
+    </div>
+    <div class="stats" id="stats">
+      <span>⚔<b id="cc">0</b></span><span>★<b id="cm">0</b></span><span>📷<b id="camc">0</b></span>
+      <span>✈<b id="cf">0</b></span><span>🌍<b id="cq">0</b></span><span>⚠<b id="cd">0</b></span><span>🌤<b id="cw">0</b></span>
+      <button class="rfbtn" id="rfbtn" title="Refresh (R)">↻</button>
+      <span class="live" id="live-dot">● LIVE</span>
+    </div>
+  </header>
+  <div class="main">
+    <div class="map-wrap">
+      <div id="map"></div>
+      <div class="layers" id="layers">
+        <button class="on" data-layer="conflict">⚔ Conflicts</button>
+        <button class="on" data-layer="military">★ Military</button>
+        <button class="on" data-layer="camera">📷 CCTV</button>
+        <button class="on" data-layer="flight">✈ Flights</button>
+        <button class="on" data-layer="quake">🌍 Quakes</button>
+        <button class="on" data-layer="disaster">⚠ Disasters</button>
+        <button class="on" data-layer="weather">🌤 Weather</button>
+      </div>
+    </div>
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-resize"></div>
+      <div class="panel" id="camera-panel">
+        <div class="p-title" style="color:#ff64c8">📷 CCTV FEEDS <span class="badge" id="scam">-</span>
+          <button class="fav-btn" id="fav-filter" title="Show favorites">⭐</button>
+          <input class="filter-inp" id="cam-filter" placeholder="Filter..." />
+        </div>
+        <div class="p-body" id="caml"><div class="ld">Loading cameras...</div></div>
+      </div>
+      <div class="panel" id="conflict-panel">
+        <div class="p-title">⚔ CONFLICTS & ★ MILITARY <span class="badge" id="sc">-</span></div>
+        <div class="p-body" id="cl"><div class="ld">Loading data...</div></div>
+      </div>
+      <div class="panel" id="disaster-panel">
+        <div class="p-title" style="color:#ff6600">⚠ DISASTERS <span class="badge" id="sd">-</span></div>
+        <div class="p-body" id="dl"><div class="ld">Fetching NASA EONET...</div></div>
+      </div>
+      <div class="panel" id="flight-panel">
+        <div class="p-title">✈ FLIGHTS & 🌍 QUAKES <span class="badge" id="sf">-</span></div>
+        <div class="p-body" id="fl"><div class="ld">Scanning...</div></div>
+      </div>
+      <div class="panel" id="weather-panel">
+        <div class="p-title" style="color:#0cc">🌤 WEATHER <span class="badge" id="sw">-</span></div>
+        <div class="p-body" id="wl"><div class="ld">Fetching Open-Meteo...</div></div>
+      </div>
+    </div>
+  </div>
+  <footer class="bar">
+    <span>🐱 MIAU SURVEILLANCE FREE v3.0 — Built by cats in Germany</span>
+    <span class="keys">⌘K Palette · R Refresh · F Fullscreen · ? Help</span>
+    <span id="lr">-</span>
+    <span id="theme-btn" title="Toggle theme">🎨</span>
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="vid-modal" onclick="window._closeModal?.(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-hdr">
+      <span id="modal-title">📷 Live Feed</span>
+      <button onclick="window._closeModal?.()">✕</button>
+    </div>
+    <div class="modal-vid"><iframe id="modal-iframe" src="" allowfullscreen loading="lazy"></iframe></div>
+    <div class="modal-link"><a id="modal-link" href="#" target="_blank">🔗 Open Full Page →</a></div>
+  </div>
+</div>
+
+<div class="cmd-palette" id="cmd-palette">
+  <div class="cmd-box">
+    <input class="cmd-input" id="cmd-input" placeholder="Type a command... (e.g. 'go tokyo', 'filter beach', 'theme dark')" />
+    <div class="cmd-results" id="cmd-results"></div>
+  </div>
+</div>
+
+<div class="help-overlay" id="help-overlay" onclick="this.classList.remove('show')">
+  <div class="help-box" onclick="event.stopPropagation()">
+    <h3>🐱 Keyboard Shortcuts</h3>
+    <table>
+      <tr><td><kbd>⌘K</kbd></td><td>Command palette</td></tr>
+      <tr><td><kbd>1</kbd>-<kbd>7</kbd></td><td>Switch layer tabs</td></tr>
+      <tr><td><kbd>8</kbd></td><td>Show all layers</td></tr>
+      <tr><td><kbd>R</kbd></td><td>Refresh data</td></tr>
+      <tr><td><kbd>F</kbd></td><td>Fullscreen</td></tr>
+      <tr><td><kbd>?</kbd></td><td>Toggle help</td></tr>
+      <tr><td><kbd>Esc</kbd></td><td>Close panels</td></tr>
+      <tr><td><kbd>Tab</kbd></td><td>Cycle theme</td></tr>
+    </table>
+    <p style="margin-top:8px;color:rgba(130,150,180,0.3);font-size:8px">Made in Germany. Written by cats.</p>
+  </div>
+</div>
+`;
+}
+
+// ── Render sidebar lists ──
+
+function renderCameras(cameras: Camera[], filterType: string | null, favoritesOnly: boolean): string {
+  const filtered = cameras
+    .filter(c => !filterType || c.t === filterType)
+    .filter(c => !favoritesOnly || state.favorites.includes(c.n))
+    .sort((a, b) => a.n.localeCompare(b.n));
+
+  const typeCounts: Record<string, Camera[]> = {};
+  filtered.forEach(c => { if (!typeCounts[c.t]) typeCounts[c.t] = []; typeCounts[c.t]!.push(c); });
+
+  return Object.entries(typeCounts).map(([type, cams]) => `
+    <div class="section-hd">${CAMERA_TYPES[type] || type} (${cams.length})</div>
+    ${cams.map(c => {
+      const isFav = state.favorites.includes(c.n);
+      const eu = embedUrl(c);
+      return `<div class="item" data-lat="${c.la}" data-lon="${c.lo}">
+        <div class="i-h">
+          <span class="i-t cam">📷</span>
+          <span class="i-n">${c.n}</span>
+          <span class="fav-star${isFav ? ' active' : ''}" data-cam="${c.n}">${isFav ? '⭐' : '☆'}</span>
+        </div>
+        <div class="i-s">${c.c}</div>
+        <button class="preview-btn" data-title="${c.n.replace(/'/g, "\\'")}" data-embed="${eu || ''}" data-url="${c.u}">▶ Preview</button>
+        <button class="fly-btn" data-lat="${c.la}" data-lon="${c.lo}">📍 Map</button>
+      </div>`;
+    }).join('')}
+  `).join('') || '<div class="ld">No cameras found</div>';
+}
+
+function renderConflicts(): string {
+  return `<div class="section-hd">⚔ CONFLICTS (${CONFLICTS.length})</div>
+    ${CONFLICTS.map(z => {
+      const cls = z.i === 'high' ? 'r' : z.i === 'medium' ? 'o' : 'g';
+      return `<div class="item" data-lat="${z.la}" data-lon="${z.lo}">
+        <div class="i-h"><span class="i-t ${cls}">⚠</span><span class="i-n">${z.n}</span></div>
+        <div class="i-s">${z.p} · Since ${z.s}</div>
+      </div>`;
+    }).join('')}
+    <div class="section-hd">★ MILITARY (${MILITARY.length})</div>
+    ${MILITARY.map(m => `
+      <div class="item" data-lat="${m.la}" data-lon="${m.lo}">
+        <div class="i-h"><span class="i-t m">${m.t === 'nuclear' ? '☢' : '★'}</span><span class="i-n">${m.n}</span></div>
+        <div class="i-s">${m.c} · ${m.t}</div>
+      </div>`).join('')}`;
+}
+
+// ── Command palette ──
+
+function setupCommandPalette() {
+  const input = document.getElementById('cmd-input') as HTMLInputElement;
+  const results = document.getElementById('cmd-results')!;
+  const palette = document.getElementById('cmd-palette')!;
+
+  input.addEventListener('input', () => {
+    const q = input.value.toLowerCase().trim();
+    if (!q) { results.innerHTML = ''; return; }
+
+    const suggestions: { label: string; action: () => void }[] = [];
+
+    // Camera search
+    CAMERAS.filter(c => c.n.toLowerCase().includes(q) || c.c.toLowerCase().includes(q)).slice(0, 5)
+      .forEach(c => suggestions.push({ label: `📷 Go to ${c.n} (${c.c})`, action: () => flyTo(c.la, c.lo, 14) }));
+
+    // Layer filters
+    if ('beach'.includes(q)) suggestions.push({ label: '🏖 Filter: Beach cams', action: () => { state.filterType = 'beach'; notify(); } });
+    if ('city'.includes(q)) suggestions.push({ label: '🏙 Filter: City cams', action: () => { state.filterType = 'city'; notify(); } });
+    if ('landmark'.includes(q)) suggestions.push({ label: '🏛 Filter: Landmarks', action: () => { state.filterType = 'landmark'; notify(); } });
+
+    // Theme
+    suggestions.push({ label: '🎨 Cycle theme (crt/dark/matrix)', action: () => cycleTheme() });
+    suggestions.push({ label: '🎨 Theme: CRT', action: () => setTheme('crt') });
+    suggestions.push({ label: '🎨 Theme: Dark', action: () => setTheme('dark') });
+
+    // Actions
+    suggestions.push({ label: '🔄 Refresh all data', action: () => refreshAll() });
+    suggestions.push({ label: '🗺 Show all layers', action: () => showAllLayers() });
+    suggestions.push({ label: '📷 Show CCTV only', action: () => showOnlyLayer('camera') });
+
+    results.innerHTML = suggestions.map(s => `<div class="cmd-item">${s.label}</div>`).join('');
+
+    // Click handlers
+    results.querySelectorAll('.cmd-item').forEach((el, i) => {
+      (el as HTMLElement).onclick = () => { suggestions[i]!.action(); palette.classList.remove('show'); input.value = ''; results.innerHTML = ''; };
+    });
+  });
+
+  // Close on click outside
+  palette.addEventListener('click', e => { if (e.target === palette) palette.classList.remove('show'); });
+}
+
+// ── Sidebar bindings ──
+
+function bindSidebarClicks() {
+  document.getElementById('caml')!.addEventListener('click', e => {
+    const target = e.target as HTMLElement;
+    // Fly-to
+    if (target.classList.contains('fly-btn') || target.closest('.item')) {
+      const item = target.closest('.item') as HTMLElement | null;
+      const lat = parseFloat(item?.dataset.lat || target.dataset.lat || '0');
+      const lon = parseFloat(item?.dataset.lon || target.dataset.lon || '0');
+      if (lat && lon) flyTo(lat, lon, 14);
+    }
+    // Preview
+    if (target.classList.contains('preview-btn')) {
+      const title = target.dataset.title || 'Camera';
+      const embed = target.dataset.embed || null;
+      const url = target.dataset.url || '#';
+      openModal(title, embed || null, url);
+    }
+    // Favorite
+    if (target.classList.contains('fav-star')) {
+      const camName = target.dataset.cam!;
+      const idx = state.favorites.indexOf(camName);
+      if (idx >= 0) state.favorites.splice(idx, 1); else state.favorites.push(camName);
+      saveFavorites();
+      notify();
+    }
+  });
+
+  document.getElementById('cl')!.addEventListener('click', e => {
+    const item = (e.target as HTMLElement).closest('.item') as HTMLElement | null;
+    if (item) {
+      const lat = parseFloat(item.dataset.lat || '0');
+      const lon = parseFloat(item.dataset.lon || '0');
+      if (lat && lon) flyTo(lat, lon, 10);
+    }
+  });
+
+  // Filter input
+  document.getElementById('cam-filter')!.addEventListener('input', (e) => {
+    const val = (e.target as HTMLInputElement).value.toLowerCase();
+    state.searchQuery = val;
+    notify();
+  });
+
+  // Favorites filter
+  document.getElementById('fav-filter')!.addEventListener('click', function() {
+    this.classList.toggle('on');
+    notify();
+  });
+}
+
+// ── Layer toggles ──
+
+function bindLayerToggles() {
+  document.getElementById('layers')!.addEventListener('click', e => {
+    const btn = (e.target as HTMLElement).closest('button') as HTMLElement | null;
+    if (!btn) return;
+    const layer = btn.dataset.layer!;
+    const on = toggleLayer(layer);
+    btn.classList.toggle('on', on);
+  });
+
+  document.getElementById('tabs')!.addEventListener('click', e => {
+    const btn = (e.target as HTMLElement).closest('button') as HTMLElement | null;
+    if (!btn) return;
+    const layer = btn.dataset.layer!;
+    document.querySelectorAll('#tabs .tab').forEach(t => t.classList.remove('on'));
+    btn.classList.add('on');
+    if (!layer) showAllLayers();
+    else showOnlyLayer(layer);
+  });
+}
+
+// ── Re-render on state change ──
+
+let favoritesOnly = false;
+
+subscribe(() => {
+  // Update layer toggles
+  document.querySelectorAll('#layers button').forEach(b => {
+    const el = b as HTMLElement;
+    el.classList.toggle('on', state.visibleLayers.has(el.dataset.layer!));
+  });
+
+  // Update tab highlighting
+  document.querySelectorAll('#tabs .tab').forEach(t => {
+    const el = t as HTMLElement;
+    el.classList.toggle('on', state.activeLayer === el.dataset.layer || (!state.activeLayer && !el.dataset.layer));
+  });
+
+  // Re-render cameras
+  const filterEl = document.getElementById('cam-filter') as HTMLInputElement;
+  const filterVal = filterEl?.value.toLowerCase() || state.searchQuery;
+  document.getElementById('caml')!.innerHTML = renderCameras(CAMERAS, state.filterType, favoritesOnly);
+  document.getElementById('camc')!.textContent = CAMERAS.length.toString();
+  document.getElementById('scam')!.textContent = CAMERAS.length.toString();
+
+  // Update conflicts
+  document.getElementById('cl')!.innerHTML = renderConflicts();
+  document.getElementById('cc')!.textContent = CONFLICTS.length.toString();
+  document.getElementById('cm')!.textContent = MILITARY.length.toString();
+  document.getElementById('sc')!.textContent = (CONFLICTS.length + MILITARY.length).toString();
+});
+
+// ── Refresh ──
+
+let countdown = REFRESH_INTERVAL;
+
+async function refreshAll() {
+  const start = Date.now();
+
+  // Disasters
+  try {
+    const layer = layers.get('disaster')!;
+    clearMarkers(layer.group);
+    const disasters = await fetchDisasters();
+    disasters.forEach(d => createDisasterMarker(d.lat, d.lon, d.title, d.categories).addTo(layer.group));
+    document.getElementById('cd')!.textContent = disasters.length.toString();
+    document.getElementById('dl')!.innerHTML = `<div class="section-hd">⚠ ACTIVE EVENTS (${disasters.length})</div>${disasters.map(d => `<div class="item"><div class="i-h"><span class="i-t o">⚠</span><span class="i-n">${d.title.substring(0, 55)}</span></div></div>`).join('')}`;
+    document.getElementById('sd')!.textContent = disasters.length.toString();
+  } catch (e) { /* silent */ }
+
+  // Flights
+  let flightCount = 0;
+  try {
+    const layer = layers.get('flight')!;
+    clearMarkers(layer.group);
+    const flights = await fetchFlights();
+    flightCount = flights.length;
+    let mil = 0;
+    flights.forEach(f => { if (f.isMilitary) mil++; createFlightMarker([f.lat, f.lon], f.callsign, f.origin, f.alt, f.isMilitary, f.milType).addTo(layer.group); });
+    document.getElementById('cf')!.textContent = `${flights.length}${mil ? ` (${mil} mil)` : ''}`;
+    document.getElementById('sf')!.textContent = flights.length.toString();
+  } catch (e) { /* silent */ }
+
+  // Quakes
+  try {
+    const layer = layers.get('quake')!;
+    clearMarkers(layer.group);
+    const quakes = await fetchQuakes();
+    quakes.forEach(q => createQuakeMarker(q.lat, q.lon, q.mag, q.place, q.depth).addTo(layer.group));
+    document.getElementById('cq')!.textContent = quakes.length.toString();
+    document.getElementById('fl')!.innerHTML = `<div class="section-hd">🌍 QUAKES (${quakes.length})</div>${quakes.slice(0, 15).map(q => {
+      const tag = q.mag >= 5 ? 'r' : q.mag >= 3 ? 'o' : 'g';
+      return `<div class="item"><div class="i-h"><span class="i-t ${tag}">M${q.mag.toFixed(1)}</span><span class="i-n">${q.place}</span></div><div class="i-s">Depth ${q.depth.toFixed(1)}km</div></div>`;
+    }).join('')}${flightCount ? `<div class="section-hd">✈ FLIGHTS (${flightCount})</div>` : ''}`;
+  } catch (e) { /* silent */ }
+
+  // Weather
+  try {
+    const layer = layers.get('weather')!;
+    clearMarkers(layer.group);
+    const weather = await fetchWeather();
+    let wxHTML = '';
+    weather.forEach(w => {
+      createWeatherMarker(w.lat, w.lon, w.name, w.temp, w.wind, w.emoji).addTo(layer.group);
+      wxHTML += `<div class="item"><div class="i-h"><span class="i-t wx">${w.emoji} ${w.temp != null ? w.temp.toFixed(1) + '°C' : '?'}</span><span class="i-n">${w.name}</span></div><div class="i-s">Wind ${w.wind != null ? w.wind.toFixed(1) + ' km/h' : '?'}</div></div>`;
+    });
+    document.getElementById('cw')!.textContent = weather.length.toString();
+    document.getElementById('wl')!.innerHTML = wxHTML || '<div class="ld">No weather data</div>';
+    document.getElementById('sw')!.textContent = weather.length.toString();
+  } catch (e) { /* silent */ }
+
+  document.getElementById('lr')!.textContent = `Last: ${new Date().toLocaleTimeString()} (${Date.now() - start}ms)`;
+  document.getElementById('live-dot')!.textContent = '● LIVE';
+  countdown = REFRESH_INTERVAL;
+}
+
+// ── Init ──
+
+export async function initApp() {
+  // Render app shell
+  document.getElementById('app')!.innerHTML = renderApp();
+
+  // Init theme
+  initTheme();
+
+  // Init map
+  initMap('map');
+
+  // Create all layer groups (cameras + conflicts use clustering)
+  createLayer('conflict', false);
+  createLayer('military', false);
+  createLayer('camera', true);
+  createLayer('flight', false);
+  createLayer('quake', false);
+  createLayer('disaster', false);
+  createLayer('weather', false);
+
+  // Static markers
+  const cameraLayer = layers.get('camera')!;
+  CAMERAS.forEach(c => createCameraMarker(c).addTo(cameraLayer.group));
+
+  const conflictLayer = layers.get('conflict')!;
+  CONFLICTS.forEach(c => createConflictMarker(c).addTo(conflictLayer.group));
+
+  const milLayer = layers.get('military')!;
+  MILITARY.forEach(m => createMilitaryMarker(m).addTo(milLayer.group));
+
+  // Initial sidebar render
+  document.getElementById('caml')!.innerHTML = renderCameras(CAMERAS, null, false);
+  document.getElementById('camc')!.textContent = CAMERAS.length.toString();
+  document.getElementById('scam')!.textContent = CAMERAS.length.toString();
+  document.getElementById('cl')!.innerHTML = renderConflicts();
+  document.getElementById('cc')!.textContent = CONFLICTS.length.toString();
+  document.getElementById('cm')!.textContent = MILITARY.length.toString();
+  document.getElementById('sc')!.textContent = (CONFLICTS.length + MILITARY.length).toString();
+
+  // Bind events
+  bindLayerToggles();
+  bindSidebarClicks();
+  setupKeyboard();
+  setupCommandPalette();
+
+  // Modal globals
+  (window as any)._closeModal = (e?: MouseEvent) => closeModal(e);
+
+  // Refresh button
+  document.getElementById('rfbtn')!.addEventListener('click', () => { refreshAll(); toast('🔄 Refreshing...', 1500); });
+
+  // Theme button
+  document.getElementById('theme-btn')!.addEventListener('click', () => { const t = cycleTheme(); toast(`🎨 Theme: ${t}`, 1500); });
+
+  // Tab key → cycle theme
+  document.addEventListener('keydown', e => { if (e.key === 'Tab' && !e.ctrlKey && !e.metaKey && !e.altKey && !(e.target as HTMLElement)?.closest('input')) { e.preventDefault(); cycleTheme(); } });
+
+  // Custom events
+  window.addEventListener('miau-refresh', () => refreshAll());
+  window.addEventListener('miau-show-all', () => showAllLayers());
+  window.addEventListener('miau-focus-layer', ((e: CustomEvent) => showOnlyLayer(e.detail)) as EventListener);
+
+  // Initial fetch + periodic refresh
+  refreshAll();
+  setInterval(refreshAll, REFRESH_INTERVAL);
+
+  // Countdown timer
+  setInterval(() => {
+    countdown -= 1000;
+    if (countdown <= 0) countdown = REFRESH_INTERVAL;
+    document.getElementById('live-dot')!.textContent = `● ${Math.round(countdown / 1000)}s`;
+  }, 1000);
+
+  // Map resize fix
+  setTimeout(() => {
+    getMap().invalidateSize();
+  }, 500);
+}
