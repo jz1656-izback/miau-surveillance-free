@@ -283,6 +283,40 @@ kbd { background: rgba(0,200,100,0.1); border: 1px solid rgba(0,200,100,0.2); bo
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 @keyframes fadeIn { from { opacity: 0; transform: translateX(-50%) translateY(-8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
+/* City search */
+.city-search-wrap { position: relative; margin-left: 8px; }
+.city-search {
+  background: rgba(0,0,0,0.4); border: 1px solid rgba(0,150,255,0.25);
+  color: var(--text); padding: 3px 8px; font-size: 9px; border-radius: 3px;
+  font-family: inherit; width: 160px;
+}
+.city-search:focus { outline: none; border-color: rgba(0,150,255,0.5); box-shadow: 0 0 6px rgba(0,150,255,0.1); }
+.city-search::placeholder { color: rgba(130,150,180,0.3); }
+.city-results {
+  position: absolute; top: 100%; left: 0; right: 0; z-index: 9000;
+  background: var(--bg2); border: 1px solid rgba(0,150,255,0.2); border-radius: 0 0 4px 4px;
+  max-height: 200px; overflow-y: auto; display: none;
+}
+.city-search-wrap:focus-within .city-results:not(:empty),
+.city-results:hover { display: block; }
+.city-results:not(:empty) { display: block; }
+
+/* City weather card */
+.city-weather-card {
+  padding: 8px 10px; background: rgba(0,150,255,0.03);
+  border: 1px solid rgba(0,150,255,0.1); border-radius: 4px; margin: 4px 0;
+}
+.city-temp-row {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+}
+.city-temp { font-size: 28px; font-weight: 700; }
+.city-details { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; font-size: 8px; color: var(--dim); }
+.hourly-row { display: flex; gap: 4px; margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(0,150,255,0.08); overflow-x: auto; }
+.hourly-item {
+  text-align: center; font-size: 8px; padding: 4px 6px;
+  background: rgba(0,0,0,0.2); border-radius: 4px; min-width: 44px; color: var(--dim);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .main { flex-direction: column; }

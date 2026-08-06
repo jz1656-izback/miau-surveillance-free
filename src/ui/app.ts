@@ -22,6 +22,7 @@ import { initEasterEggs } from './eastereggs';
 import { trackAction } from './achievements';
 import { addHistoryEvent } from './timeline';
 import { addCustomCamera, getAllCameras, getCustomCameras, removeCustomCamera, importCameras, exportCameras } from './custom-cameras';
+import { initCitySearch } from './city-panel';
 
 const REFRESH_INTERVAL = 60000;
 
@@ -45,6 +46,10 @@ function renderApp(): string {
       <button class="tab" data-layer="wildfire">🔥 FIRES</button>
       <button class="tab" data-layer="iss">🛰 ISS</button>
       <button class="tab" data-layer="lightning">⚡ STRIKES</button>
+    </div>
+    <div class="city-search-wrap" id="city-search-wrap">
+      <input class="city-search" id="city-search" placeholder="🔍 Search any city..." autocomplete="off" spellcheck="false" />
+      <div class="city-results" id="city-results"></div>
     </div>
     <div class="stats" id="stats">
       <span>⚔<b id="cc">0</b></span><span>★<b id="cm">0</b></span><span>📷<b id="camc">0</b></span>
@@ -90,6 +95,10 @@ function renderApp(): string {
     </div>
     <div class="sidebar" id="sidebar">
       <div class="sidebar-resize"></div>
+      <div class="panel" id="city-panel" style="min-height:120px;display:none;">
+        <div class="p-title" style="color:#09f">📍 CITY VIEW <span class="badge">search a city above</span></div>
+        <div class="p-body"><div class="ld">Type a city in the search bar</div></div>
+      </div>
       <div class="panel" id="camera-panel">
         <div class="p-title" style="color:#ff64c8">📷 CCTV FEEDS <span class="badge" id="scam">-</span>
           <button class="fav-btn" id="fav-filter" title="Show favorites">⭐</button>
@@ -579,6 +588,7 @@ export async function initApp() {
   setupCommandPalette();
 
   // Init new modules (wrapped to prevent single failure from breaking everything)
+  try { initCitySearch(); } catch (e) { console.warn('City search init failed:', e); }
   try { initGrid(); } catch (e) { console.warn('Grid init failed:', e); }
   try { initTerminal(); } catch (e) { console.warn('Terminal init failed:', e); }
   try { initVoice(); } catch (e) { console.warn('Voice init failed:', e); }
