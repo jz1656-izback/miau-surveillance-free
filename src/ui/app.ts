@@ -2,7 +2,7 @@ import { state, notify, subscribe, saveFavorites } from '../store/state';
 import { CAMERAS, CAMERA_TYPES, Camera } from '../data/cameras';
 import { CONFLICTS } from '../data/conflicts';
 import { MILITARY } from '../data/military';
-import { initMap, flyTo, fitBounds, getMap } from '../map/core';
+import { initMap, flyTo, fitBounds, getMap, switchTile, toggleWindyMode, toggleSingleWindyLayer, removeWindyOverlay } from '../map/core';
 import { createLayer, layers, toggleLayer, showOnlyLayer, showAllLayers } from '../map/layers';
 import { createCameraMarker, createConflictMarker, createMilitaryMarker, createFlightMarker, createQuakeMarker, createDisasterMarker, createWeatherMarker, createWildfireMarker, createIssMarker, createLightningMarker, clearMarkers, embedUrl } from '../map/markers';
 import { fetchFlights } from '../api/flights';
@@ -50,6 +50,7 @@ function renderApp(): string {
       <span>⚔<b id="cc">0</b></span><span>★<b id="cm">0</b></span><span>📷<b id="camc">0</b></span>
       <span>✈<b id="cf">0</b></span><span>🌍<b id="cq">0</b></span><span>⚠<b id="cd">0</b></span><span>🌤<b id="cw">0</b></span>
       <span>🔥<b id="cfire">0</b></span><span>🛰<b id="ciss">-</b></span><span>⚡<b id="clit">0</b></span>
+      <button class="rfbtn windy-mode-btn" id="windy-mode-btn" title="Windy Weather Mode">🌪 Windy</button>
       <button class="rfbtn" id="grid-btn" title="Grid View">🖥</button>
       <button class="rfbtn" id="terminal-btn" title="Terminal">⌨️</button>
       <button class="rfbtn" id="voice-btn" title="Voice">🔇</button>
@@ -71,6 +72,20 @@ function renderApp(): string {
         <button class="on" data-layer="wildfire">🔥 Wildfires</button>
         <button class="on" data-layer="iss">🛰 ISS</button>
         <button class="on" data-layer="lightning">⚡ Lightning</button>
+      </div>
+      <div class="tile-switcher">
+        <button class="tile-btn on" data-tile="dark" onclick="window._switchTile?.('dark')">🌙</button>
+        <button class="tile-btn" data-tile="satellite" onclick="window._switchTile?.('satellite')">🛰</button>
+        <button class="tile-btn" data-tile="terrain" onclick="window._switchTile?.('terrain')">⛰</button>
+        <button class="tile-btn" data-tile="streets" onclick="window._switchTile?.('streets')">🗺</button>
+      </div>
+      <div class="tile-switcher windy-switcher">
+        <span class="sw-label">Windy:</span>
+        <button class="windy-btn" data-windy="wind" onclick="window._toggleSingleWindy?.('wind')">💨 Wind</button>
+        <button class="windy-btn" data-windy="temp" onclick="window._toggleSingleWindy?.('temp')">🌡 Temp</button>
+        <button class="windy-btn" data-windy="precip" onclick="window._toggleSingleWindy?.('precip')">🌧 Rain</button>
+        <button class="windy-btn" data-windy="clouds" onclick="window._toggleSingleWindy?.('clouds')">☁ Clouds</button>
+        <button class="windy-btn" data-windy="pressure" onclick="window._toggleSingleWindy?.('pressure')">🔘 Press</button>
       </div>
     </div>
     <div class="sidebar" id="sidebar">
@@ -606,6 +621,12 @@ export async function initApp() {
 
   // Modal globals
   (window as any)._closeModal = (e?: MouseEvent) => closeModal(e);
+  (window as any)._switchTile = (key: string) => switchTile(key);
+  (window as any)._toggleSingleWindy = (layer: string) => toggleSingleWindyLayer(layer as any);
+
+  // Windy Mode button
+  const windyBtn = document.getElementById('windy-mode-btn');
+  if (windyBtn) windyBtn.addEventListener('click', () => toggleWindyMode());
 
   // Refresh button
   document.getElementById('rfbtn')!.addEventListener('click', () => { refreshAll(); toast('🔄 Refreshing...', 1500); });

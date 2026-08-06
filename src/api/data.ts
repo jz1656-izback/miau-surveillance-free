@@ -34,7 +34,11 @@ export async function fetchDisasters(): Promise<DisasterData[]> {
 
 export interface WeatherData {
   name: string; lat: number; lon: number;
-  temp: number | null; wind: number | null; emoji: string;
+  temp: number | null; feelsLike: number | null; humidity: number | null;
+  wind: number | null; windDir: number | null;
+  emoji: string; description: string;
+  sunrise: string | null; sunset: string | null;
+  hourly: { time: string; temp: number; precip: number }[];
 }
 
 const WEATHER_CITIES = [
@@ -53,20 +57,54 @@ function weatherEmoji(code: number): string {
   if (code >= 40) return '☁'; if (code >= 1) return '⛅'; return '☀';
 }
 
+function weatherDesc(code: number): string {
+  if (code >= 95) return 'Thunderstorm'; if (code >= 80) return 'Rain';
+  if (code >= 60) return 'Drizzle'; if (code >= 40) return 'Fog/Cloudy';
+  if (code >= 1) return 'Partly cloudy'; return 'Clear';
+}
+
+function tempColor(temp: number): string {
+  if (temp >= 35) return '#ff2020'; if (temp >= 28) return '#ff6600';
+  if (temp >= 20) return '#ffaa00'; if (temp >= 12) return '#88cc00';
+  if (temp >= 5) return '#00cc66'; if (temp >= -5) return '#00cccc';
+  return '#4488ff';
+}
+
+export { weatherEmoji, weatherDesc, tempColor };
+
 export async function fetchWeather(): Promise<WeatherData[]> {
   const results = await Promise.allSettled(
     WEATHER_CITIES.map(async city => {
       const res = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${city.la}&longitude=${city.lo}&current=temperature_2m,weather_code,wind_speed_10m&timezone=auto`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${city.la}&longitude=${city.lo}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,precipitation_probability&daily=sunrise,sunset&timezone=auto&forecast_hours=6`,
         { signal: AbortSignal.timeout(5000) }
       );
       const data = await res.json();
       const c = data.current || {};
+      const d = data.daily || {};
+      const h = data.hourly || {};
+      const hourly = [];
+      if (h.time && h.temperature_2m) {
+        for (let i = 0; i < Math.min(6, h.time.length); i++) {
+          hourly.push({
+            time: h.time[i],
+            temp: h.temperature_2m[i],
+            precip: h.precipitation_probability?.[i] ?? 0,
+          });
+        }
+      }
       return {
         name: city.n, lat: city.la, lon: city.lo,
         temp: c.temperature_2m ?? null,
+        feelsLike: c.apparent_temperature ?? null,
+        humidity: c.relative_humidity_2m ?? null,
         wind: c.wind_speed_10m ?? null,
+        windDir: c.wind_direction_10m ?? null,
         emoji: weatherEmoji(c.weather_code || 0),
+        description: weatherDesc(c.weather_code || 0),
+        sunrise: d.sunrise?.[0]?.split('T')[1] || null,
+        sunset: d.sunset?.[0]?.split('T')[1] || null,
+        hourly,
       };
     })
   );

@@ -2,6 +2,7 @@ import L from 'leaflet';
 import { Camera } from '../data/cameras';
 import { Conflict } from '../data/conflicts';
 import { Military } from '../data/military';
+import { tempColor } from '../api/data';
 import { flyTo } from './core';
 import { openModal } from '../ui/modal';
 import { CAMERA_TYPES } from '../data/cameras';
@@ -112,15 +113,25 @@ export function createDisasterMarker(lat: number, lon: number, title: string, ca
   }).bindPopup(`<b>${title}</b><br>${categories}`);
 }
 
-export function createWeatherMarker(lat: number, lon: number, cityName: string, temp: number | null, wind: number | null, emoji: string): L.Marker {
+export function createWeatherMarker(lat: number, lon: number, cityName: string, temp: number | null, wind: number | null, emoji: string, humidity?: number | null, feelsLike?: number | null, windDir?: number | null): L.Marker {
+  const col = temp != null ? tempColor(temp) : '#0cc';
+  const arrow = windDir != null ? `<div style="display:inline-block;transform:rotate(${windDir}deg);font-size:10px">↑</div>` : '';
   return L.marker([lat, lon], {
     icon: L.divIcon({
       className: '',
-      html: '<div style="font-size:15px;filter:drop-shadow(0 0 3px #0cc)">🌤</div>',
-      iconSize: [17, 17],
-      iconAnchor: [8, 8],
+      html: `<div style="background:${col};color:#000;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid ${col};box-shadow:0 0 8px ${col}44">${temp != null ? Math.round(temp)+'°' : '?'}</div>`,
+      iconSize: [30, 30],
+      iconAnchor: [15, 15],
     }),
-  }).bindPopup(`<b>${emoji} ${cityName}</b><br>Temp: ${temp != null ? temp.toFixed(1) + '°C' : '?'}<br>Wind: ${wind != null ? wind.toFixed(1) + ' km/h' : '?'}`);
+  }).bindPopup(`<b>${emoji} ${cityName}</b><br>Temp: ${temp != null ? temp.toFixed(1) + '°C' : '?'}${feelsLike != null ? ' (feels ' + feelsLike.toFixed(1) + '°)' : ''}<br>Wind: ${wind != null ? wind.toFixed(1) + ' km/h ' + arrow : '?'} ${windDir != null ? '(' + windDir + '°)' : ''}<br>Humidity: ${humidity != null ? humidity + '%' : '?'}<br><span style="color:${col}">${getTempLabel(temp)}</span>`);
+}
+
+function getTempLabel(temp: number | null): string {
+  if (temp == null) return '';
+  if (temp >= 35) return '🔥 Very hot'; if (temp >= 28) return '☀ Hot';
+  if (temp >= 20) return '😊 Warm'; if (temp >= 12) return '🍃 Mild';
+  if (temp >= 5) return '🧥 Cool'; if (temp >= -5) return '❄ Cold';
+  return '🥶 Freezing';
 }
 
 export function createWildfireMarker(lat: number, lon: number, brightness: number, confidence: number, satellite: string): L.CircleMarker {

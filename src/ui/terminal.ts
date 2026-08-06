@@ -1,4 +1,4 @@
-import { flyTo } from '../map/core';
+import { flyTo, toggleWindyMode, toggleSingleWindyLayer, removeWindyOverlay } from '../map/core';
 import { showOnlyLayer, showAllLayers } from '../map/layers';
 import { cycleTheme, setTheme } from '../utils/theme';
 import { toast } from './toast';
@@ -67,6 +67,16 @@ const COMMANDS: Record<string, { help: string; fn: (args: string[]) => string | 
     },
   },
 
+  windy: {
+    help: "windy on|off|<layer> — Weather overlay (wind/temp/precip/clouds/pressure)",
+    fn: (args) => {
+      if (args[0] === "on" || args[0] === undefined || args[0] === "") { toggleWindyMode(); return "Windy mode toggled"; }
+      if (args[0] === "off") { removeWindyOverlay(); return "Windy mode off"; }
+      const valid = ["wind","temp","precip","clouds","pressure"];
+      if (valid.includes(args[0]!)) { toggleSingleWindyLayer(args[0] as any); return "Windy layer: " + args[0]; }
+      return "Usage: windy [on|off|wind|temp|precip|clouds|pressure]";
+    },
+  },
   cam: {
     help: "cam add <name> <lat> <lon> <url> [yt_id] | cam list | cam export",
     fn: (args) => {
