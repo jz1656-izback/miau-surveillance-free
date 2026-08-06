@@ -1,3 +1,3 @@
 #!/bin/bash
 cd /home/jevgeniz/Projekte/miau-surveillance-free
-npx vite --port 5183 --host 2>&1
+npx vite --port 5199 --host 2>&1

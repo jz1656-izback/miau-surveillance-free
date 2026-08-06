@@ -9,7 +9,7 @@
 
 ```bash
 npm install
-npm run dev      # → http://localhost:5183
+npm run dev      # → http://localhost:5199
 ```
 
 ## ⌨️ Keyboard Shortcuts

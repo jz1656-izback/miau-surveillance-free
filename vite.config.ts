@@ -6,7 +6,7 @@ export default defineConfig({
     alias: { '@': path.resolve(__dirname, 'src') }
   },
   server: {
-    port: 5183,
+    port: 5199,
     strictPort: true,
     host: true
   }
