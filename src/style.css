@@ -333,6 +333,11 @@ kbd { background: rgba(0,200,100,0.1); border: 1px solid rgba(0,200,100,0.2); bo
   background: rgba(0,0,0,0.2); border-radius: 4px; min-width: 44px; color: var(--dim);
 }
 
+/* Cat mascot */
+.cat-mascot { font-size: 22px; cursor: pointer; margin-left: 8px; transition: transform 0.2s; user-select: none; }
+.cat-mascot:hover { transform: scale(1.3) rotate(5deg); }
+.cat-mascot:active { transform: scale(0.9); }
+
 /* Responsive */
 @media (max-width: 768px) {
   .main { flex-direction: column; }

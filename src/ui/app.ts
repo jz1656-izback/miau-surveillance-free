@@ -25,6 +25,7 @@ import { addCustomCamera, getAllCameras, getCustomCameras, removeCustomCamera, i
 import { initCitySearch } from './city-panel';
 import { fetchTrafficCams } from '../api/traffic-cams';
 import { createTrafficMarker } from '../map/markers';
+import { initCatMascot } from './cat-mascot';
 
 const REFRESH_INTERVAL = 60000;
 
@@ -34,8 +35,9 @@ function renderApp(): string {
   return `
 <div id="app">
   <header class="hdr">
-    <div class="dot"></div>
-    <h1>🐱 MIAU SURVEILLANCE FREE</h1>
+    <div class="dot" style="width:auto;height:auto;border-radius:0;background:transparent;box-shadow:none;animation:none;font-size:14px">🐾</div>
+    <h1>🐱 MIAU SURVEILLANCE</h1>
+    <span id="cat-mascot" class="cat-mascot" title="Click for cat facts! 🐱">😺</span>
     <div class="tabs" id="tabs">
       <button class="tab on" data-layer="">ALL</button>
       <button class="tab" data-layer="conflict">CONFLICTS</button>
@@ -109,36 +111,36 @@ function renderApp(): string {
           <button class="fav-btn" id="add-cam-btn" title="Add custom camera">+</button>
           <input class="filter-inp" id="cam-filter" placeholder="Filter..." />
         </div>
-        <div class="p-body" id="caml"><div class="ld">Loading cameras...</div></div>
+        <div class="p-body" id="caml"><div class="ld">🐱 Cats deploying cameras...</div></div>
       </div>
       <div class="panel" id="conflict-panel">
         <div class="p-title">⚔ CONFLICTS & ★ MILITARY <span class="badge" id="sc">-</span></div>
-        <div class="p-body" id="cl"><div class="ld">Loading data...</div></div>
+        <div class="p-body" id="cl"><div class="ld">🐱 Cats analyzing conflicts...</div></div>
       </div>
       <div class="panel" id="disaster-panel">
         <div class="p-title" style="color:#ff6600">⚠ DISASTERS <span class="badge" id="sd">-</span></div>
-        <div class="p-body" id="dl"><div class="ld">Fetching NASA EONET...</div></div>
+        <div class="p-body" id="dl"><div class="ld">🐱 Cats sniffing for disasters...</div></div>
       </div>
       <div class="panel" id="flight-panel">
         <div class="p-title">✈ FLIGHTS & 🌍 QUAKES <span class="badge" id="sf">-</span></div>
-        <div class="p-body" id="fl"><div class="ld">Scanning...</div></div>
+        <div class="p-body" id="fl"><div class="ld">🐱 Cats tracking the skies...</div></div>
       </div>
       <div class="panel" id="weather-panel">
         <div class="p-title" style="color:#0cc">🌤 WEATHER <span class="badge" id="sw">-</span></div>
-        <div class="p-body" id="wl"><div class="ld">Fetching Open-Meteo...</div></div>
+        <div class="p-body" id="wl"><div class="ld">🐱 Cats checking the weather...</div></div>
       </div>
       <div class="panel" id="wildfire-panel">
         <div class="p-title" style="color:#ff4400">🔥 WILDFIRES (NASA FIRMS) <span class="badge" id="sfire">-</span></div>
-        <div class="p-body" id="firel"><div class="ld">Fetching NASA FIRMS...</div></div>
+        <div class="p-body" id="firel"><div class="ld">🐱 Cats scanning for fires...</div></div>
       </div>
       <div class="panel" id="iss-panel">
         <div class="p-title" style="color:#fff">🛰 ISS TRACKER <span class="badge" id="siss">-</span></div>
-        <div class="p-body" id="issl"><div class="ld">Tracking ISS...</div></div>
+        <div class="p-body" id="issl"><div class="ld">🐱 Cats tracking the ISS...</div></div>
       </div>
     </div>
   </div>
   <footer class="bar">
-    <span>🐱 MIAU SURVEILLANCE FREE v3.0 — Built by cats in Germany</span>
+    <span>🐱 MIAU SURVEILLANCE — Built by cats. For cats. In Germany. Miau.</span>
     <span class="keys">Alt+K Palette · R Refresh · F Fullscreen · ? Help</span>
     <span id="lr">-</span>
     <span id="theme-btn" title="Toggle theme">🎨</span>
@@ -620,6 +622,7 @@ export async function initApp() {
   try { initGrid(); } catch (e) { console.warn('Grid init failed:', e); }
   try { initTerminal(); } catch (e) { console.warn('Terminal init failed:', e); }
   try { initVoice(); } catch (e) { console.warn('Voice init failed:', e); }
+  try { initCatMascot(); } catch (e) { console.warn('Cat mascot init failed:', e); }
   try { initEasterEggs(); } catch (e) { console.warn('Easter eggs init failed:', e); }
 
   // Voice button
@@ -667,7 +670,7 @@ export async function initApp() {
   if (windyBtn) windyBtn.addEventListener('click', () => toggleWindyMode());
 
   // Refresh button
-  document.getElementById('rfbtn')!.addEventListener('click', () => { refreshAll(); toast('🔄 Refreshing...', 1500); });
+  document.getElementById('rfbtn')!.addEventListener('click', () => { refreshAll(); toast('🐱 Miau! Refreshing...', 1500); });
 
   // Theme button
   document.getElementById('theme-btn')!.addEventListener('click', () => { const t = cycleTheme(); toast(`🎨 Theme: ${t}`, 1500); });
