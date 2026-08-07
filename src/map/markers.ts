@@ -45,8 +45,9 @@ export function createCameraMarker(cam: Camera, onClick?: () => void): L.Marker 
     }),
   });
 
-  const popup = L.popup({ maxWidth: eu && !cam.vid && cam.u.includes('earthcam') ? 500 : 340, closeButton: true })
-    .setContent(`<b>📷 ${cam.n}</b><br><span style="font-size:8px;color:rgba(130,150,180,0.4)">${cam.c} · ${cam.t}</span>${vidHTML}<a class="cam-link" href="${cam.u}" target="_blank">🔗 Open Full Page →</a>`);
+  const pageUrl = cam.vid ? `https://www.youtube.com/watch?v=${cam.vid}` : cam.u;
+  const popup = L.popup({ maxWidth: eu && !cam.vid && cam.u.includes('earthcam') ? 560 : 420, closeButton: true, minWidth: 320 })
+    .setContent(`<b style="font-size:12px">📷 ${cam.n}</b><br><span style="font-size:10px;color:rgba(130,150,180,0.4)">${cam.c} · ${cam.t}</span>${vidHTML}<a class="cam-link" href="${pageUrl}" target="_blank">🔗 Open on ${cam.vid ? 'YouTube' : 'EarthCam'} →</a>`);
 
   m.bindPopup(popup);
   m.on('click', () => { closePopup(); currentPopup = popup; onClick?.(); });
