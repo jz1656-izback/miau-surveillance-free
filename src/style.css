@@ -39,7 +39,7 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { height: 50%; width: 50%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; font-size: 14px; zoom: 2; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; font-size: 14px; }
 body::after {
   content: ''; position: fixed; inset: 0;
   background: repeating-linear-gradient(0deg, var(--scanlines) 0px, var(--scanlines) 1px, transparent 1px, transparent 2px);
