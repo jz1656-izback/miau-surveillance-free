@@ -51,6 +51,11 @@ export function initMap(elementId: string): L.Map {
     preferCanvas: true,
   }).setView([20, 10], 3);
 
+  // Create a separate pane for Windy overlays (above base tiles)
+  map.createPane('windyPane');
+  map.getPane('windyPane')!.style.zIndex = '300';
+  map.getPane('windyPane')!.style.pointerEvents = 'none';
+
   switchTile('dark');
 
   L.control.zoom({ position: 'bottomleft' }).addTo(map);
@@ -74,7 +79,7 @@ export function toggleWindyMode(): boolean {
     // Add all weather overlays
     WINDY_MODE_LAYERS.forEach(layer => {
       const url = getWindyTileUrl(layer);
-      const overlay = L.tileLayer(url, { opacity: 0.6, attribution: 'Windy.com' }).addTo(map!);
+      const overlay = L.tileLayer(url, { opacity: 0.7, attribution: 'Windy.com', pane: 'windyPane' }).addTo(map!);
       windyOverlays.push(overlay);
     });
   } else {
@@ -104,7 +109,7 @@ export function toggleSingleWindyLayer(layer: WindyLayer) {
     windyOverlays = windyOverlays.filter(o => o !== existing);
   } else {
     const url = getWindyTileUrl(layer);
-    const overlay = L.tileLayer(url, { opacity: 0.5, attribution: 'Windy.com' }).addTo(map);
+    const overlay = L.tileLayer(url, { opacity: 0.7, attribution: 'Windy.com', pane: 'windyPane' }).addTo(map);
     (overlay as any)._windyLayer = layer;
     windyOverlays.push(overlay);
     if (!windyMode) switchTile('windy');
