@@ -53,7 +53,7 @@ export function initMap(elementId: string): L.Map {
 
   switchTile('dark');
 
-  L.control.zoom({ position: 'bottomright' }).addTo(map);
+  L.control.zoom({ position: 'bottomleft' }).addTo(map);
   L.control.scale({ position: 'bottomleft', imperial: false }).addTo(map);
 
   setTimeout(() => map!.invalidateSize(), 200);

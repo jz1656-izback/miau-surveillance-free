@@ -92,10 +92,10 @@ body::after {
 
 /* Tile & Windy switchers */
 .tile-switcher {
-  position: absolute; bottom: 36px; right: 8px; z-index: 1000;
+  position: absolute; bottom: 36px; left: 50px; z-index: 1000;
   display: flex; gap: 2px;
 }
-.tile-switcher.windy-switcher { bottom: 60px; }
+.tile-switcher.windy-switcher { bottom: 60px; left: 50px; }
 .sw-label {
   font-size: 7px; color: var(--dim); display: flex; align-items: center; margin-right: 2px;
 }
