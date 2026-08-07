@@ -190,7 +190,7 @@ export function createTrafficMarker(
   
   let vidHTML: string;
   if (isVideo) {
-    vidHTML = `<div class="cam-vid-wrap" style="width:320px;height:180px"><div class="vid-loading">🚦 Traffic Cam</div><video id="${playerId}" controls muted playsinline style="width:100%;height:100%;background:#000"></video></div>`;
+    vidHTML = `<div class="cam-vid-wrap" style="width:340px;height:200px"><div class="vid-loading" id="vid-load-${playerId}">🚦 Loading stream...</div><video id="${playerId}" controls muted playsinline autoplay style="width:100%;height:100%;background:#000"></video><div class="vid-fallback2" id="vid-fb-${playerId}" style="display:none"><div style="font-size:10px;color:var(--dim);margin-bottom:8px">Stream unavailable</div><a class="cam-link" href="${url}" target="_blank">▶ Open Stream</a></div></div>`;
   } else {
     const imgId = 'tc-img-' + Math.random().toString(36).slice(2, 8);
     vidHTML = `<div class="cam-vid-wrap" style="width:320px;height:200px;overflow:hidden"><div class="vid-loading">📸 Loading...</div><img id="${imgId}" src="${url}" style="width:100%;height:100%;object-fit:cover" onload="this.previousElementSibling.style.display='none'" onerror="this.style.display='none';this.parentElement.querySelector('.vid-fallback2').style.display='flex'" /><div class="vid-fallback2" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:6px;background:rgba(5,12,16,0.9)"><a class="cam-link" href="${url}" target="_blank">▶ Open Stream</a></div></div>`;
@@ -218,19 +218,47 @@ export function createTrafficMarker(
   // Init HLS player on popup open
   if (isVideo) {
     m.on('popupopen', () => {
-      setTimeout(() => {
+      let tries = 0;
+      const maxTries = 20;
+      const tryInit = () => {
         const video = document.getElementById(playerId) as HTMLVideoElement;
-        if (video && Hls.isSupported()) {
-          const hls = new Hls({ maxBufferLength: 5 });
-          hls.loadSource(url);
-          hls.attachMedia(video);
-          hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
-          (m as any)._hls = hls;
-        } else if (video && video.canPlayType('application/vnd.apple.mpegurl')) {
+        const loading = document.getElementById('vid-load-' + playerId);
+        const fallback = document.getElementById('vid-fb-' + playerId);
+        if (!video) { if (++tries < maxTries) requestAnimationFrame(tryInit); return; }
+        
+        const showFallback = () => {
+          if (loading) loading.style.display = 'none';
+          if (video) video.style.display = 'none';
+          if (fallback) fallback.style.display = 'flex';
+        };
+
+        if (Hls.isSupported()) {
+          try {
+            const hls = new Hls({ 
+              maxBufferLength: 5,
+              maxLoadingDelay: 4,
+              manifestLoadingTimeOut: 8000,
+            });
+            hls.loadSource(url);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+              if (loading) loading.style.display = 'none';
+              video.play().catch(() => {});
+            });
+            hls.on(Hls.Events.ERROR, () => showFallback());
+            (m as any)._hls = hls;
+          } catch { showFallback(); }
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
           video.src = url;
+          video.addEventListener('loadedmetadata', () => { if (loading) loading.style.display = 'none'; });
+          video.addEventListener('error', () => showFallback());
           video.play().catch(() => {});
+          setTimeout(() => { if (video.readyState === 0) showFallback(); }, 5000);
+        } else {
+          showFallback();
         }
-      }, 100);
+      };
+      requestAnimationFrame(tryInit);
     });
     m.on('popupclose', () => {
       const hls = (m as any)._hls;
