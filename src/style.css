@@ -39,7 +39,7 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; font-size: 13px; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; font-size: 14px; }
 body::after {
   content: ''; position: fixed; inset: 0;
   background: repeating-linear-gradient(0deg, var(--scanlines) 0px, var(--scanlines) 1px, transparent 1px, transparent 2px);
@@ -120,20 +120,20 @@ body::after {
 
 /* Sidebar */
 .sidebar {
-  width: 460px; background: var(--bg2); border-left: 1px solid var(--border);
+  width: 600px; background: var(--bg2); border-left: 1px solid var(--border);
   display: flex; flex-direction: column; position: relative;
 }
 .sidebar-resize { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; cursor: col-resize; z-index: 10; }
 .sidebar-resize:hover { background: var(--green); opacity: 0.2; }
 .panel { flex: 1; overflow-y: auto; border-bottom: 1px solid var(--border); min-height: 60px; }
 .p-title {
-  padding: 6px 10px; font-size: 9px; font-weight: 700; color: var(--green);
+  padding: 8px 12px; font-size: 11px; font-weight: 700; color: var(--green);
   text-transform: uppercase; letter-spacing: 1.5px; background: rgba(0,180,100,0.03);
   border-bottom: 1px solid rgba(0,200,100,0.05); position: sticky; top: 0;
   z-index: 5; display: flex; align-items: center; gap: 6px;
 }
-.p-title .badge { font-size: 8px; color: var(--dim); margin-left: auto; }
-.p-body { padding: 4px; font-size: 9px; line-height: 1.5; }
+.p-title .badge { font-size: 9px; color: var(--dim); margin-left: auto; }
+.p-body { padding: 6px; font-size: 10px; line-height: 1.5; }
 .item {
   padding: 5px 8px; margin-bottom: 1px; background: rgba(0,160,100,0.015);
   border-left: 2px solid rgba(0,180,100,0.08); border-radius: 0 3px 3px 0;
@@ -150,18 +150,18 @@ body::after {
 .i-t.p { background: rgba(255,60,120,0.15); color: #ff3c78; }
 .i-t.cam { background: rgba(255,80,180,0.12); color: #ff50b4; }
 .i-t.wx { background: rgba(0,200,200,0.12); color: #0cc; }
-.item .i-n { font-weight: 700; color: var(--text); flex: 1; font-size: 10px; }
-.item .i-s { color: var(--dim); font-size: 8px; margin-top: 1px; }
+.item .i-n { font-weight: 700; color: var(--text); flex: 1; font-size: 12px; }
+.item .i-s { color: var(--dim); font-size: 10px; margin-top: 2px; }
 .ld { text-align: center; color: var(--dim); padding: 16px; font-size: 9px; }
 .ld.err { color: rgba(255,80,80,0.3); }
 .ld .retry { color: var(--green); cursor: pointer; text-decoration: underline; font-size: 8px; margin-top: 4px; display: inline-block; }
-.section-hd { padding: 8px 10px 3px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--dim); }
+.section-hd { padding: 10px 12px 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--dim); }
 .cam-toggle:hover { color: var(--green); background: var(--green2); border-radius: 2px; }
-.toggle-arrow { font-size: 8px; margin-right: 3px; transition: transform 0.15s; }
+.toggle-arrow { font-size: 10px; margin-right: 3px; transition: transform 0.15s; }
 .cam-section { margin-bottom: 2px; }
 .cam-group { padding: 0 2px; }
-.live-badge { display:inline-block; background:rgba(255,40,40,0.15); color:#ff2828; font-size:6px; padding:0 3px; border-radius:2px; font-weight:700; margin-left:3px; animation:pulse 1.5s infinite; }
-.rec-badge { display:inline-block; background:rgba(0,120,240,0.12); color:#0088cc; font-size:6px; padding:0 3px; border-radius:2px; font-weight:700; margin-left:3px; }
+.live-badge { display:inline-block; background:rgba(255,40,40,0.15); color:#ff2828; font-size:8px; padding:1px 4px; border-radius:2px; font-weight:700; margin-left:4px; animation:pulse 1.5s infinite; }
+.rec-badge { display:inline-block; background:rgba(0,120,240,0.12); color:#0088cc; font-size:8px; padding:1px 4px; border-radius:2px; font-weight:700; margin-left:4px; }
 
 /* Favorite star */
 .fav-star { font-size: 12px; cursor: pointer; color: var(--dim); transition: color 0.2s; }
@@ -174,7 +174,7 @@ body::after {
 }
 .filter-inp:focus { outline: none; border-color: var(--green); }
 .preview-btn, .fly-btn {
-  display: inline-block; margin-top: 3px; padding: 2px 6px; font-size: 7px;
+  display: inline-block; margin-top: 4px; padding: 4px 10px; font-size: 10px;
   cursor: pointer; font-family: inherit; border-radius: 2px; margin-right: 3px;
 }
 .preview-btn { background: rgba(255,80,180,0.06); border: 1px solid rgba(255,80,180,0.18); color: #ff64c8; }
