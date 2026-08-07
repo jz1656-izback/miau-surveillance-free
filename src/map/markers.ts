@@ -192,7 +192,13 @@ export function createTrafficMarker(
   if (isVideo) {
     vidHTML = `<div class="cam-vid-wrap" style="width:320px;height:180px"><div class="vid-loading">🚦 Traffic Cam</div><video id="${playerId}" controls muted playsinline style="width:100%;height:100%;background:#000"></video></div>`;
   } else {
-    vidHTML = `<div class="cam-vid-wrap" style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;height:180px"><div style="font-size:8px;color:var(--dim)">📸 ${desc.substring(0, 40)}</div><a class="cam-link" href="${url}" target="_blank">▶ Open Stream</a></div>`;
+    const imgId = 'tc-img-' + Math.random().toString(36).slice(2, 8);
+    vidHTML = `<div class="cam-vid-wrap" style="width:320px;height:200px;overflow:hidden"><div class="vid-loading">📸 Loading...</div><img id="${imgId}" src="${url}" style="width:100%;height:100%;object-fit:cover" onload="this.previousElementSibling.style.display='none'" onerror="this.style.display='none';this.parentElement.querySelector('.vid-fallback2').style.display='flex'" /><div class="vid-fallback2" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;gap:6px;background:rgba(5,12,16,0.9)"><a class="cam-link" href="${url}" target="_blank">▶ Open Stream</a></div></div>`;
+    // Auto-refresh image every 10 seconds
+    setTimeout(() => {
+      const img = document.getElementById(imgId);
+      if (img) setInterval(() => { (img as HTMLImageElement).src = '${url}?t=' + Date.now(); }, 10000);
+    }, 100);
   }
 
   const m = L.marker([lat, lon], {

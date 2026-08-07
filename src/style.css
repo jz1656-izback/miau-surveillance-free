@@ -39,7 +39,7 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; font-size: 14px; }
+html, body { height: 50%; width: 50%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; font-size: 14px; zoom: 2; }
 body::after {
   content: ''; position: fixed; inset: 0;
   background: repeating-linear-gradient(0deg, var(--scanlines) 0px, var(--scanlines) 1px, transparent 1px, transparent 2px);
@@ -202,6 +202,11 @@ body::after {
 .cam-vid-wrap .vid-fallback {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
   flex-direction: column; background: rgba(5,12,16,0.95);
+}
+.cam-vid-wrap .vid-fallback2 {
+  position: absolute; inset: 0; display: flex; align-items: center;
+  justify-content: center; flex-direction: column; gap: 6px;
+  background: rgba(5,12,16,0.9);
 }
 .cam-vid-wrap .vid-loading {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
