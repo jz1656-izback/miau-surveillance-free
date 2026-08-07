@@ -245,23 +245,34 @@ function renderCameras(cameras: Camera[], filterType: string | null, favoritesOn
   const typeCounts: Record<string, Camera[]> = {};
   filtered.forEach(c => { if (!typeCounts[c.t]) typeCounts[c.t] = []; typeCounts[c.t]!.push(c); });
 
-  return Object.entries(typeCounts).map(([type, cams]) => `
-    <div class="section-hd">${CAMERA_TYPES[type] || type} (${cams.length})</div>
-    ${cams.map(c => {
-      const isFav = state.favorites.includes(c.n);
-      const eu = embedUrl(c);
-      return `<div class="item" data-lat="${c.la}" data-lon="${c.lo}">
-        <div class="i-h">
-          <span class="i-t cam">📷</span>
-          <span class="i-n">${c.n}</span>
-          <span class="fav-star${isFav ? ' active' : ''}" data-cam="${c.n}">${isFav ? '⭐' : '☆'}</span>
-        </div>
-        <div class="i-s">${c.c}</div>
-        <button class="preview-btn" data-title="${c.n.replace(/'/g, "\\'")}" data-embed="${eu || ''}" data-url="${c.u}">▶ Preview</button>
-        <button class="fly-btn" data-lat="${c.la}" data-lon="${c.lo}">📍 Map</button>
-      </div>`;
-    }).join('')}
-  `).join('') || '<div class="ld">No cameras found</div>';
+  let idx = 0;
+  return Object.entries(typeCounts).map(([type, cams]) => {
+    const sectionId = 'cam-section-' + (idx++);
+    return `
+    <div class="cam-section">
+      <div class="section-hd cam-toggle" data-section="${sectionId}" style="cursor:pointer">
+        <span class="toggle-arrow" id="${sectionId}-arrow">▼</span>
+        ${CAMERA_TYPES[type] || type} (${cams.length})
+      </div>
+      <div class="cam-group" id="${sectionId}">
+      ${cams.map(c => {
+        const isFav = state.favorites.includes(c.n);
+        const eu = embedUrl(c);
+        const isLive = c.live;
+        return `<div class="item" data-lat="${c.la}" data-lon="${c.lo}">
+          <div class="i-h">
+            <span class="i-t cam">${isLive ? '🔴' : '📷'}</span>
+            <span class="i-n">${c.n}</span>
+            <span class="fav-star${isFav ? ' active' : ''}" data-cam="${c.n}">${isFav ? '⭐' : '☆'}</span>
+          </div>
+          <div class="i-s">${c.c} ${isLive ? '<span class="live-badge">LIVE</span>' : '<span class="rec-badge">STREAM</span>'}</div>
+          <button class="preview-btn" data-title="${c.n.replace(/'/g, "\\'")}" data-embed="${eu || ''}" data-url="${c.u}">▶ Preview</button>
+          <button class="fly-btn" data-lat="${c.la}" data-lon="${c.lo}">📍 Map</button>
+        </div>`;
+      }).join('')}
+      </div>
+    </div>`;
+  }).join('') || '<div class="ld">No cameras found</div>';
 }
 
 function renderConflicts(): string {
@@ -328,8 +339,20 @@ function setupCommandPalette() {
 // ── Sidebar bindings ──
 
 function bindSidebarClicks() {
+  // Camera section toggle (expand/collapse)
   document.getElementById('caml')!.addEventListener('click', e => {
     const target = e.target as HTMLElement;
+    // Toggle section
+    const toggle = target.closest('.cam-toggle') as HTMLElement;
+    if (toggle) {
+      const sectionId = toggle.dataset.section!;
+      const group = document.getElementById(sectionId)!;
+      const arrow = document.getElementById(sectionId + '-arrow')!;
+      const isCollapsed = group.style.display === 'none';
+      group.style.display = isCollapsed ? '' : 'none';
+      arrow.textContent = isCollapsed ? '▼' : '▶';
+      return;
+    }
     // Fly-to
     if (target.classList.contains('fly-btn') || target.closest('.item')) {
       const item = target.closest('.item') as HTMLElement | null;
