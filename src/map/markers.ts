@@ -17,7 +17,7 @@ function closePopup() {
 }
 
 export function embedUrl(cam: Camera): string | null {
-  if (cam.vid) return `https://www.youtube.com/embed/${cam.vid}?autoplay=1&mute=1&playsinline=1`;
+  if (cam.vid) return `https://www.youtube-nocookie.com/embed/${cam.vid}?playsinline=1&modestbranding=1&rel=0`;
   if (cam.u.includes('earthcam.com')) return cam.u.replace(/\/$/, '') + '?embed=1&autoplay=1';
   return cam.u;
 }
@@ -30,7 +30,8 @@ export function createCameraMarker(cam: Camera, onClick?: () => void): L.Marker 
   let vidHTML: string;
   if (eu) {
     const isEC = !cam.vid && cam.u.includes('earthcam');
-    vidHTML = `<div class="cam-vid-wrap${isEC ? ' cam-ec' : ''}"><div class="vid-loading">${cam.vid ? '▶ YouTube Live' : '🔄 EarthCam Live'}</div><iframe src="${eu}" allow="autoplay; encrypted-media" allowfullscreen onload="this.previousElementSibling.style.display='none'" onerror="this.previousElementSibling.textContent='⚠ Cannot load'"></iframe></div>`;
+    const ytFallback = cam.vid ? `https://www.youtube.com/watch?v=${cam.vid}` : cam.u;
+    vidHTML = `<div class="cam-vid-wrap${isEC ? ' cam-ec' : ''}"><div class="vid-loading">${cam.vid ? '▶ YouTube Live' : '🔄 EarthCam Live'}</div><iframe src="${eu}" allow="encrypted-media; picture-in-picture" allowfullscreen loading="lazy" sandbox="allow-scripts allow-same-origin allow-presentation" onload="this.previousElementSibling.style.display='none'" onerror="this.style.display='none';this.parentElement.classList.add('blocked');this.parentElement.querySelector('.vid-fallback').style.display='flex'"></iframe><div class="vid-fallback" style="display:none"><div style="font-size:10px;color:var(--dim);margin-bottom:8px">Embed blocked by YouTube</div><a class="cam-link" href="${ytFallback}" target="_blank" style="font-size:11px;padding:6px 14px">▶ Watch on YouTube</a></div></div>`;
   } else {
     vidHTML = `<div class="cam-vid-wrap cam-poster"><div style="font-size:36px">📷</div><div style="font-size:9px;color:rgba(130,150,180,0.4);text-align:center">Live feed available<br>on EarthCam.com</div><a class="cam-link" href="${cam.u}" target="_blank" style="font-size:10px;padding:4px 12px">▶ Open Live Feed</a></div>`;
   }
