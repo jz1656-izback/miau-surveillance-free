@@ -20,7 +20,7 @@ export interface Alert {
 
 export const state: AppState = {
   activeLayer: null,
-  visibleLayers: new Set(['conflict', 'military', 'camera', 'flight', 'quake', 'disaster', 'weather']),
+  visibleLayers: new Set(['conflict', 'military', 'camera', 'flight', 'quake', 'disaster', 'weather', 'wildfire', 'iss', 'lightning', 'traffic']),
   searchQuery: '',
   filterType: null,
   favorites: JSON.parse(localStorage.getItem('miau-favorites') || '[]'),
