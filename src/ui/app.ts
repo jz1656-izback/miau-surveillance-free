@@ -23,6 +23,8 @@ import { trackAction } from './achievements';
 import { addHistoryEvent } from './timeline';
 import { addCustomCamera, getAllCameras, getCustomCameras, removeCustomCamera, importCameras, exportCameras } from './custom-cameras';
 import { initCitySearch } from './city-panel';
+import { fetchTrafficCams } from '../api/traffic-cams';
+import { createTrafficMarker } from '../map/markers';
 
 const REFRESH_INTERVAL = 60000;
 
@@ -46,6 +48,7 @@ function renderApp(): string {
       <button class="tab" data-layer="wildfire">🔥 FIRES</button>
       <button class="tab" data-layer="iss">🛰 ISS</button>
       <button class="tab" data-layer="lightning">⚡ STRIKES</button>
+      <button class="tab" data-layer="traffic">🚦 TRAFFIC</button>
     </div>
     <div class="city-search-wrap" id="city-search-wrap">
       <input class="city-search" id="city-search" placeholder="🔍 Search any city..." autocomplete="off" spellcheck="false" />
@@ -77,6 +80,7 @@ function renderApp(): string {
         <button class="on" data-layer="wildfire">🔥 Wildfires</button>
         <button class="on" data-layer="iss">🛰 ISS</button>
         <button class="on" data-layer="lightning">⚡ Lightning</button>
+        <button class="on" data-layer="traffic">🚦 Traffic</button>
       </div>
       <div class="tile-switcher">
         <button class="tile-btn on" data-tile="dark" onclick="window._switchTile?.('dark')">🌙</button>
@@ -584,6 +588,7 @@ export async function initApp() {
   createLayer('wildfire', true);
   createLayer('iss', false);
   createLayer('lightning', false);
+  createLayer('traffic', true);
 
   // Static markers
   const cameraLayer = layers.get('camera')!;
@@ -674,6 +679,13 @@ export async function initApp() {
   window.addEventListener('miau-refresh', () => refreshAll());
   window.addEventListener('miau-show-all', () => showAllLayers());
   window.addEventListener('miau-focus-layer', ((e: CustomEvent) => showOnlyLayer(e.detail)) as EventListener);
+
+  // Load traffic cameras (one-time, 7000+ cameras)
+  try {
+    const tLayer = layers.get('traffic')!;
+    const trafficCams = await fetchTrafficCams();
+    trafficCams.forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
+  } catch (e) { console.warn('Traffic cam load failed:', e); }
 
   // Initial fetch + periodic refresh
   refreshAll();

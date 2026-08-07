@@ -180,6 +180,61 @@ export function createAirQualityMarker(lat: number, lon: number, city: string, a
   }).bindPopup(`<b>🌫 ${city}</b><br>AQI: ${aqi}<br>PM2.5: ${pm25.toFixed(1)} µg/m³<br><span style="color:${col}">${aqi > 150 ? 'Hazardous' : aqi > 100 ? 'Unhealthy' : aqi > 50 ? 'Moderate' : 'Good'}</span>`);
 }
 
+import Hls from 'hls.js';
+
+export function createTrafficMarker(
+  lat: number, lon: number, desc: string, url: string, format: string, state: string
+): L.Marker {
+  const isVideo = format === 'M3U8' || format === 'M3U9';
+  const playerId = 'tc-' + Math.random().toString(36).slice(2, 8);
+  
+  let vidHTML: string;
+  if (isVideo) {
+    vidHTML = `<div class="cam-vid-wrap" style="width:320px;height:180px"><div class="vid-loading">🚦 Traffic Cam</div><video id="${playerId}" controls muted playsinline style="width:100%;height:100%;background:#000"></video></div>`;
+  } else {
+    vidHTML = `<div class="cam-vid-wrap" style="display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;height:180px"><div style="font-size:8px;color:var(--dim)">📸 ${desc.substring(0, 40)}</div><a class="cam-link" href="${url}" target="_blank">▶ Open Stream</a></div>`;
+  }
+
+  const m = L.marker([lat, lon], {
+    icon: L.divIcon({
+      className: '',
+      html: '<div style="font-size:14px;filter:drop-shadow(0 0 3px #ffaa00)">🚦</div>',
+      iconSize: [16, 16],
+      iconAnchor: [8, 8],
+    }),
+  });
+
+  const popup = L.popup({ maxWidth: 360, minWidth: 300 })
+    .setContent(`<b>🚦 ${desc}</b><br><span style="font-size:9px;color:var(--dim)">${state} · ${format}</span>${vidHTML}`);
+
+  m.bindPopup(popup);
+  
+  // Init HLS player on popup open
+  if (isVideo) {
+    m.on('popupopen', () => {
+      setTimeout(() => {
+        const video = document.getElementById(playerId) as HTMLVideoElement;
+        if (video && Hls.isSupported()) {
+          const hls = new Hls({ maxBufferLength: 5 });
+          hls.loadSource(url);
+          hls.attachMedia(video);
+          hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
+          (m as any)._hls = hls;
+        } else if (video && video.canPlayType('application/vnd.apple.mpegurl')) {
+          video.src = url;
+          video.play().catch(() => {});
+        }
+      }, 100);
+    });
+    m.on('popupclose', () => {
+      const hls = (m as any)._hls;
+      if (hls) { hls.destroy(); (m as any)._hls = null; }
+    });
+  }
+
+  return m;
+}
+
 export function clearMarkers(group: L.LayerGroup | L.MarkerClusterGroup) {
   if ('clearLayers' in group) {
     (group as L.MarkerClusterGroup).clearLayers();
