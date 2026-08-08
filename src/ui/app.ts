@@ -30,6 +30,7 @@ import { initTracking } from '../tracking/layer';
 import { initTimeline } from './timeline-bar';
 import { addEvent, loadHistory } from '../tracking/history';
 import { findNearby, correlateEvent, autoCorrelate, findClusters } from '../tracking/correlation';
+import { logger, initLogPanel } from '../utils/logger';
 
 const REFRESH_INTERVAL = 60000;
 
@@ -250,6 +251,22 @@ function renderApp(): string {
         <button id="add-cam-export" class="rfbtn">📤 Export</button>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="error-overlay" id="error-recovery" style="display:none">
+  <div class="error-box">
+    <h2>😿 Miau! Something broke</h2>
+    <p id="err-msg" style="color:#f44;font-size:10px;margin:8px 0"></p>
+    <button onclick="location.reload()" style="padding:8px 16px;background:var(--green);color:#000;border:none;border-radius:4px;cursor:pointer;font-family:inherit">🔄 Reload App</button>
+    <button onclick="document.getElementById('error-recovery').style.display='none'" style="padding:8px 16px;background:transparent;border:1px solid var(--dim);color:var(--dim);border-radius:4px;cursor:pointer;font-family:inherit;margin-left:8px">Try anyway</button>
+  </div>
+</div>
+
+<div class="log-overlay" id="log-overlay" style="display:none">
+  <div class="log-box">
+    <div class="log-hdr">🐱 Miau Logs (press ~ to toggle)</div>
+    <div class="log-body" id="log-panel"></div>
   </div>
 </div>
 `;
@@ -590,9 +607,11 @@ export async function initApp() {
 
   // Init theme
   initTheme();
+  initLogPanel();
+  logger.info('APP', 'UI rendered, initializing systems...');
 
   // Init map
-  initMap('map');
+  try { initMap('map'); logger.info('APP', 'Map initialized'); } catch (e) { logger.error('MAP', 'Map init failed', e); }
 
   // Create all layer groups (cameras + conflicts use clustering)
   createLayer('conflict', false);
