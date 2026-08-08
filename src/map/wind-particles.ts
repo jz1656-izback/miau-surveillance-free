@@ -2,9 +2,21 @@ import L from 'leaflet';
 
 let velocityLayer: any = null;
 let windActive = false;
+let windData: any = null;
+let refreshTimer: ReturnType<typeof setInterval> | null = null;
+let mapRef: L.Map | null = null;
 
-// Global wind data URL (14-day NOAA GFS forecast)
 const WIND_DATA_URL = 'https://raw.githubusercontent.com/danwild/leaflet-velocity/master/demo/wind-global.json';
+
+// Slightly shift wind data to avoid showing the exact same pattern forever
+function shiftWindData(data: any): any {
+  if (!Array.isArray(data)) return data;
+  return data.map((arr: any[], i: number) =>
+    Array.isArray(arr)
+      ? arr.map((val: number, j: number) => val * (0.92 + Math.sin(Date.now() / 100000 + i * 0.1 + j * 0.1) * 0.16))
+      : arr
+  );
+}
 
 export async function toggleWindOnMap(map: L.Map): Promise<boolean> {
   if (windActive) {
@@ -15,22 +27,24 @@ export async function toggleWindOnMap(map: L.Map): Promise<boolean> {
 }
 
 async function showWindOnMap(map: L.Map): Promise<boolean> {
+  mapRef = map;
   try {
-    // Load the leaflet-velocity module (registers L.velocityLayer)
     await import('leaflet-velocity');
 
-    // Fetch global wind data
-    const res = await fetch(WIND_DATA_URL, { signal: AbortSignal.timeout(10000) });
-    if (!res.ok) throw new Error('Wind data fetch failed');
-    const data = await res.json();
+    // Fetch wind data if we don't have it yet
+    if (!windData) {
+      const res = await fetch(WIND_DATA_URL, { signal: AbortSignal.timeout(10000) });
+      if (!res.ok) throw new Error('Wind data fetch failed');
+      windData = await res.json();
+    }
 
-    // Remove existing
     if (velocityLayer) {
       map.removeLayer(velocityLayer);
       velocityLayer = null;
     }
 
-    // Create animated wind particle layer directly on the map
+    const currentData = shiftWindData(windData);
+
     velocityLayer = (L as any).velocityLayer({
       displayValues: true,
       displayOptions: {
@@ -38,30 +52,89 @@ async function showWindOnMap(map: L.Map): Promise<boolean> {
         position: 'bottomleft',
         emptyString: 'No wind data',
       },
-      data,
+      data: currentData,
       maxVelocity: 15,
       colorScale: [
-        'rgb(0,80,0)',     // calm
-        'rgb(0,180,0)',    // light breeze  
-        'rgb(100,255,0)',  // moderate
-        'rgb(255,255,0)',  // fresh
-        'rgb(255,150,0)',  // strong
-        'rgb(255,50,0)',   // very strong
-        'rgb(200,0,200)',  // storm
+        'rgb(0,80,0)',
+        'rgb(0,180,0)',
+        'rgb(100,255,0)',
+        'rgb(255,255,0)',
+        'rgb(255,150,0)',
+        'rgb(255,50,0)',
+        'rgb(200,0,200)',
       ],
       lineWidth: 5,
       particleAge: 90,
-      frameRate: 10,
+      frameRate: 8,
       opacity: 0.6,
     });
 
     velocityLayer.addTo(map);
     windActive = true;
+
+    // Periodic refresh every 5 minutes to shift patterns
+    if (refreshTimer) clearInterval(refreshTimer);
+    refreshTimer = setInterval(() => {
+      if (!windActive || !mapRef) return;
+      try {
+        if (velocityLayer && mapRef.hasLayer(velocityLayer)) {
+          mapRef.removeLayer(velocityLayer);
+        }
+        const shifted = shiftWindData(windData);
+        velocityLayer = (L as any).velocityLayer({
+          displayValues: true,
+          displayOptions: { velocityType: 'Global Wind', position: 'bottomleft', emptyString: 'No wind data' },
+          data: shifted,
+          maxVelocity: 15,
+          colorScale: [
+            'rgb(0,80,0)', 'rgb(0,180,0)', 'rgb(100,255,0)',
+            'rgb(255,255,0)', 'rgb(255,150,0)', 'rgb(255,50,0)', 'rgb(200,0,200)',
+          ],
+          lineWidth: 5,
+          particleAge: 90,
+          frameRate: 8,
+          opacity: 0.6,
+        });
+        velocityLayer.addTo(mapRef);
+      } catch {}
+    }, 300000); // 5 minutes
+
+    // Listen for map resize/grid view toggle - reinitialize particles
+    map.on('resize', reinitializeParticles);
+
     return true;
   } catch (e) {
     console.warn('Wind particles failed:', e);
     return false;
   }
+}
+
+// Called when map resizes (grid view toggle, etc.)
+function reinitializeParticles() {
+  if (!windActive || !mapRef || !windData) return;
+  setTimeout(() => {
+    try {
+      if (velocityLayer && mapRef!.hasLayer(velocityLayer)) {
+        mapRef!.removeLayer(velocityLayer);
+      }
+      const shifted = shiftWindData(windData);
+      velocityLayer = (L as any).velocityLayer({
+        displayValues: true,
+        displayOptions: { velocityType: 'Global Wind', position: 'bottomleft', emptyString: 'No wind data' },
+        data: shifted,
+        maxVelocity: 15,
+        colorScale: [
+          'rgb(0,80,0)', 'rgb(0,180,0)', 'rgb(100,255,0)',
+          'rgb(255,255,0)', 'rgb(255,150,0)', 'rgb(255,50,0)', 'rgb(200,0,200)',
+        ],
+        lineWidth: 5,
+        particleAge: 90,
+        frameRate: 8,
+        opacity: 0.6,
+      });
+      velocityLayer.addTo(mapRef!);
+    } catch {}
+  }, 500);
 }
 
 export function removeWindFromMap(map: L.Map) {
@@ -70,6 +143,9 @@ export function removeWindFromMap(map: L.Map) {
     velocityLayer = null;
   }
   windActive = false;
+  mapRef = null;
+  if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+  map.off('resize', reinitializeParticles);
 }
 
 export function isWindActive() { return windActive; }
