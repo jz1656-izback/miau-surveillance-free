@@ -4,7 +4,7 @@ import { CONFLICTS } from '../data/conflicts';
 import { MILITARY } from '../data/military';
 import { initMap, flyTo, fitBounds, getMap, switchTile, toggleWindyMode, toggleSingleWindyLayer, removeWindyOverlay, toggleWindParticles } from '../map/core';
 import { createLayer, layers, toggleLayer, showOnlyLayer, showAllLayers } from '../map/layers';
-import { createCameraMarker, createConflictMarker, createMilitaryMarker, createFlightMarker, createQuakeMarker, createDisasterMarker, createWeatherMarker, createWildfireMarker, createIssMarker, createLightningMarker, clearMarkers, embedUrl } from '../map/markers';
+import { createCameraMarker, createConflictMarker, createMilitaryMarker, createFlightMarker, createQuakeMarker, createDisasterMarker, createWeatherMarker, createWildfireMarker, createIssMarker, createLightningMarker, createTrafficMarker, clearMarkers, embedUrl } from '../map/markers';
 import { fetchFlights } from '../api/flights';
 import { fetchQuakes, fetchDisasters, fetchWeather } from '../api/data';
 import { fetchWildfires } from '../api/wildfires';
