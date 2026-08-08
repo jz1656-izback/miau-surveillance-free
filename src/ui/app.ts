@@ -27,6 +27,8 @@ import { fetchTrafficCams } from '../api/traffic-cams';
 import { createTrafficMarker } from '../map/markers';
 import { initCatMascot } from './cat-mascot';
 import { initTracking } from '../tracking/layer';
+import { initTimeline } from './timeline-bar';
+import { addEvent, loadHistory } from '../tracking/history';
 
 const REFRESH_INTERVAL = 60000;
 
@@ -139,6 +141,13 @@ function renderApp(): string {
         <div class="p-body" id="issl"><div class="ld">🐱 Cats tracking the ISS...</div></div>
       </div>
     </div>
+  </div>
+  <div class="timeline-bar" id="timeline-bar">
+    <button class="timeline-btn" id="timeline-play" title="Play/Pause">▶</button>
+    <button class="timeline-btn" id="timeline-speed" title="Playback speed">1x</button>
+    <span class="timeline-label" id="timeline-label">Now</span>
+    <input type="range" class="timeline-slider" id="timeline-slider" min="0" max="100" value="100" />
+    <span class="timeline-stats" id="timeline-stats">No events</span>
   </div>
   <footer class="bar">
     <span>🐱 MIAU SURVEILLANCE — Built by cats. For cats. In Germany. Miau.</span>
@@ -486,7 +495,7 @@ async function refreshAll() {
     const flights = await fetchFlights();
     flightCount = flights.length;
     let mil = 0;
-    flights.forEach(f => { if (f.isMilitary) mil++; createFlightMarker([f.lat, f.lon], f.callsign, f.origin, f.alt, f.isMilitary, f.milType).addTo(layer.group); });
+    flights.forEach(f => { if (f.isMilitary) mil++; createFlightMarker([f.lat, f.lon], f.callsign, f.origin, f.alt, f.isMilitary, f.milType).addTo(layer.group); if (f.isMilitary) addEvent({ id: '', timestamp: Date.now(), type: 'flight', lat: f.lat, lon: f.lon, label: 'MIL ' + f.callsign, detail: f.milType }); });
     document.getElementById('cf')!.textContent = `${flights.length}${mil ? ` (${mil} mil)` : ''}`;
     document.getElementById('sf')!.textContent = flights.length.toString();
   } catch (e) { /* silent */ }
@@ -496,7 +505,7 @@ async function refreshAll() {
     const layer = layers.get('quake')!;
     clearMarkers(layer.group);
     const quakes = await fetchQuakes();
-    quakes.forEach(q => createQuakeMarker(q.lat, q.lon, q.mag, q.place, q.depth).addTo(layer.group));
+    quakes.forEach(q => { createQuakeMarker(q.lat, q.lon, q.mag, q.place, q.depth).addTo(layer.group); if (q.mag >= 3) addEvent({ id: '', timestamp: Date.now(), type: 'quake', lat: q.lat, lon: q.lon, label: 'M' + q.mag.toFixed(1) + ' ' + q.place, magnitude: q.mag }); });
     document.getElementById('cq')!.textContent = quakes.length.toString();
     document.getElementById('fl')!.innerHTML = `<div class="section-hd">🌍 QUAKES (${quakes.length})</div>${quakes.slice(0, 15).map(q => {
       const tag = q.mag >= 5 ? 'r' : q.mag >= 3 ? 'o' : 'g';
@@ -625,6 +634,10 @@ export async function initApp() {
   try { initVoice(); } catch (e) { console.warn('Voice init failed:', e); }
   try { initCatMascot(); } catch (e) { console.warn('Cat mascot init failed:', e); }
   try { initEasterEggs(); } catch (e) { console.warn('Easter eggs init failed:', e); }
+
+  // Timeline
+  loadHistory();
+  initTimeline();
 
   // Voice button
   const voiceBtn = document.getElementById('voice-btn');

@@ -333,6 +333,34 @@ kbd { background: rgba(0,200,100,0.1); border: 1px solid rgba(0,200,100,0.2); bo
   background: rgba(0,0,0,0.2); border-radius: 4px; min-width: 44px; color: var(--dim);
 }
 
+/* Timeline bar */
+.timeline-bar {
+  display: flex; align-items: center; gap: 6px; padding: 2px 12px;
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  flex-shrink: 0; z-index: 999;
+}
+.timeline-slider {
+  flex: 1; height: 4px; -webkit-appearance: none; appearance: none;
+  background: var(--border); border-radius: 2px; outline: none; cursor: pointer;
+}
+.timeline-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--green); cursor: pointer; border: 2px solid var(--bg);
+}
+.timeline-btn {
+  padding: 2px 6px; font-size: 9px; background: var(--green2);
+  border: 1px solid rgba(0,200,100,0.2); color: var(--dim); cursor: pointer;
+  border-radius: 3px; font-family: inherit;
+}
+.timeline-btn:hover { color: var(--green); }
+.timeline-label {
+  font-size: 8px; color: var(--green); min-width: 45px; text-align: center;
+}
+.timeline-stats {
+  font-size: 8px; color: var(--dim); min-width: 100px; white-space: nowrap;
+  text-align: right;
+}
+
 /* Cat mascot */
 .cat-mascot { font-size: 22px; cursor: pointer; margin-left: 8px; transition: transform 0.2s; user-select: none; }
 .cat-mascot:hover { transform: scale(1.3) rotate(5deg); }
