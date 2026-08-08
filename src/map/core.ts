@@ -76,7 +76,7 @@ export function toggleWindyMode(): boolean {
     // Add all weather overlays
     WINDY_MODE_LAYERS.forEach(layer => {
       const url = getWindyTileUrl(layer);
-      const overlay = L.tileLayer(url, { opacity: 0.8, attribution: 'Windy.com', pane: 'overlayPane', className: 'windy-tile-overlay' }).addTo(map!);
+      const overlay = L.tileLayer(url, { opacity: 0.45, attribution: 'Windy.com', pane: 'overlayPane', className: 'windy-tile-overlay' }).addTo(map!);
       windyOverlays.push(overlay);
     });
   } else {
@@ -106,7 +106,7 @@ export function toggleSingleWindyLayer(layer: WindyLayer) {
     windyOverlays = windyOverlays.filter(o => o !== existing);
   } else {
     const url = getWindyTileUrl(layer);
-    const overlay = L.tileLayer(url, { opacity: 0.8, attribution: 'Windy.com', pane: 'overlayPane', className: 'windy-tile-overlay' }).addTo(map);
+    const overlay = L.tileLayer(url, { opacity: 0.45, attribution: 'Windy.com', pane: 'overlayPane', className: 'windy-tile-overlay' }).addTo(map);
     (overlay as any)._windyLayer = layer;
     windyOverlays.push(overlay);
     if (!windyMode) switchTile('windy');
