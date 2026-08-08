@@ -7,14 +7,10 @@ import { flyTo } from './core';
 import { openModal } from '../ui/modal';
 import { CAMERA_TYPES } from '../data/cameras';
 
-let currentPopup: L.Popup | null = null;
+import { nicePopup, nicePopupMini } from './popup';
 
-function closePopup() {
-  if (currentPopup) {
-    currentPopup.remove();
-    currentPopup = null;
-  }
-}
+let currentPopup: L.Popup | null = null;
+function closePopup() { if (currentPopup) { currentPopup.remove(); currentPopup = null; } }
 
 export function embedUrl(cam: Camera): string | null {
   if (cam.vid) return `https://www.youtube-nocookie.com/embed/${cam.vid}?playsinline=1&modestbranding=1&rel=0`;
@@ -47,7 +43,7 @@ export function createCameraMarker(cam: Camera, onClick?: () => void): L.Marker 
 
   const pageUrl = cam.vid ? `https://www.youtube.com/watch?v=${cam.vid}` : cam.u;
   const popup = L.popup({ maxWidth: eu && !cam.vid && cam.u.includes('earthcam') ? 560 : 420, closeButton: true, minWidth: 320 })
-    .setContent(`<b style="font-size:12px">📷 ${cam.n}</b><br><span style="font-size:10px;color:rgba(130,150,180,0.4)">${cam.c} · ${cam.t}</span>${vidHTML}<a class="cam-link" href="${pageUrl}" target="_blank">🔗 Open on ${cam.vid ? 'YouTube' : 'EarthCam'} →</a>`);
+    .setContent(nicePopup(cam.n, `${cam.c} · ${cam.t}`, vidHTML, '📷', cam.live ? '🔴 LIVE' : '📡'));
 
   m.bindPopup(popup);
   m.on('click', () => { closePopup(); currentPopup = popup; onClick?.(); });
@@ -65,7 +61,7 @@ export function createConflictMarker(conflict: Conflict): L.Marker {
       iconSize: [22, 22],
       iconAnchor: [11, 11],
     }),
-  }).bindPopup(`<b>${conflict.n}</b><br>${conflict.p}<br>Since ${conflict.s}<br><span style="color:${col}">${conflict.i} intensity</span>`);
+  }).bindPopup(nicePopupMini(conflict.n, `${conflict.p} · Since ${conflict.s}`, '⚠'));
 }
 
 export function createMilitaryMarker(m: Military): L.Marker {
@@ -77,7 +73,7 @@ export function createMilitaryMarker(m: Military): L.Marker {
       iconSize: [20, 20],
       iconAnchor: [10, 10],
     }),
-  }).bindPopup(`<b>${m.n}</b><br>${m.c} · ${m.t}`);
+  }).bindPopup(nicePopupMini(m.n, `${m.c} · ${m.t}`, m.t === 'nuclear' ? '☢' : '★'));
 }
 
 export function createFlightMarker(state: [number, number], callsign: string, origin: string, alt: number | null, isMilitary: boolean, milType?: string): L.Marker {
@@ -90,7 +86,7 @@ export function createFlightMarker(state: [number, number], callsign: string, or
       iconSize: [18, 18],
       iconAnchor: [9, 9],
     }),
-  }).bindPopup(`<b>${isMilitary ? '🛩 MIL: ' : '✈ '}${callsign}</b><br>${origin}<br>Alt: ${alt ? Math.round(alt) + 'm' : '-'}${isMilitary ? `<br><span style="color:#ff4466">MILITARY: ${milType}</span>` : ''}`);
+  }).bindPopup(nicePopup(callsign, `${origin} · Alt: ${alt ? Math.round(alt) + 'm' : '?'}`, isMilitary ? `<span style="color:#ff4466;font-size:10px">⚠ MILITARY: ${milType || 'Yes'}</span>` : '', isMilitary ? '🛩' : '✈', isMilitary ? '🔴 MIL' : ''));
 }
 
 export function createQuakeMarker(lat: number, lon: number, mag: number, place: string, depth: number): L.CircleMarker {
@@ -101,7 +97,7 @@ export function createQuakeMarker(lat: number, lon: number, mag: number, place: 
     fillColor: c,
     fillOpacity: 0.35,
     weight: 1,
-  }).bindPopup(`<b>M${mag.toFixed(1)}</b><br>${place}<br>Depth: ${depth.toFixed(1)}km`);
+  }).bindPopup(nicePopup(`M${mag.toFixed(1)}`, place, `Depth: ${depth.toFixed(1)}km`, '🌍'));
 }
 
 export function createDisasterMarker(lat: number, lon: number, title: string, categories: string): L.Marker {
@@ -112,7 +108,7 @@ export function createDisasterMarker(lat: number, lon: number, title: string, ca
       iconSize: [18, 18],
       iconAnchor: [9, 9],
     }),
-  }).bindPopup(`<b>${title}</b><br>${categories}`);
+  }).bindPopup(nicePopup(title.substring(0, 60), categories, '', '🔥'));
 }
 
 export function createWeatherMarker(lat: number, lon: number, cityName: string, temp: number | null, wind: number | null, emoji: string, humidity?: number | null, feelsLike?: number | null, windDir?: number | null): L.Marker {
@@ -125,7 +121,7 @@ export function createWeatherMarker(lat: number, lon: number, cityName: string, 
       iconSize: [30, 30],
       iconAnchor: [15, 15],
     }),
-  }).bindPopup(`<b>${emoji} ${cityName}</b><br>Temp: ${temp != null ? temp.toFixed(1) + '°C' : '?'}${feelsLike != null ? ' (feels ' + feelsLike.toFixed(1) + '°)' : ''}<br>Wind: ${wind != null ? wind.toFixed(1) + ' km/h ' + arrow : '?'} ${windDir != null ? '(' + windDir + '°)' : ''}<br>Humidity: ${humidity != null ? humidity + '%' : '?'}<br><span style="color:${col}">${getTempLabel(temp)}</span>`);
+  }).bindPopup(nicePopup(`${emoji} ${cityName}`, `Temp: ${temp != null ? temp.toFixed(1) + '°C' : '?'}${feelsLike != null ? ' · Feels ' + feelsLike.toFixed(1) + '°' : ''}`, `Wind: ${wind != null ? wind.toFixed(1) + ' km/h' : '?'} · Humidity: ${humidity != null ? humidity + '%' : '?'}`, '🌤'));
 }
 
 function getTempLabel(temp: number | null): string {
@@ -144,7 +140,7 @@ export function createWildfireMarker(lat: number, lon: number, brightness: numbe
     fillColor: confidence > 80 ? '#ff2000' : confidence > 50 ? '#ff6600' : '#ffaa00',
     fillOpacity: 0.5,
     weight: 1,
-  }).bindPopup(`<b>🔥 Wildfire</b><br>Brightness: ${brightness.toFixed(1)}K<br>Confidence: ${confidence}%<br>Satellite: ${satellite}`);
+  }).bindPopup(nicePopup('Wildfire', `Brightness: ${brightness.toFixed(1)}K · Confidence: ${confidence}%`, `Satellite: ${satellite}`, '🔥'));
 }
 
 export function createIssMarker(lat: number, lon: number, timestamp: number): L.Marker {
@@ -155,7 +151,7 @@ export function createIssMarker(lat: number, lon: number, timestamp: number): L.
       iconSize: [20, 20],
       iconAnchor: [10, 10],
     }),
-  }).bindPopup(`<b>🛰 International Space Station</b><br>Lat: ${lat.toFixed(2)}<br>Lon: ${lon.toFixed(2)}<br>Updated: ${new Date(timestamp * 1000).toLocaleTimeString()}`);
+  }).bindPopup(nicePopup('ISS', `Orbiting Earth`, `Lat: ${lat.toFixed(2)} · Lon: ${lon.toFixed(2)} · ${new Date(timestamp * 1000).toLocaleTimeString()}`, '🛰', '🟢 LIVE'));
 }
 
 export function createLightningMarker(lat: number, lon: number, time: number): L.CircleMarker {
@@ -165,7 +161,7 @@ export function createLightningMarker(lat: number, lon: number, time: number): L
     fillColor: '#ffff00',
     fillOpacity: 0.8,
     weight: 0,
-  }).bindPopup(`<b>⚡ Lightning strike</b><br>Time: ${new Date(time).toLocaleTimeString()}`);
+  }).bindPopup(nicePopup('Lightning Strike', '', `Time: ${new Date(time).toLocaleTimeString()}`, '⚡'));
 }
 
 export function createAirQualityMarker(lat: number, lon: number, city: string, aqi: number, pm25: number): L.Marker {
