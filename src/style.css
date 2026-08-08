@@ -136,8 +136,8 @@ body::after {
 }
 .windy-hdr button:hover { background: rgba(255,255,255,0.25); }
 
-/* Windy tile overlays */
-.windy-tile-overlay { pointer-events: none !important; }
+/* Wind particles — keep canvas alive during map interactions */
+.leaflet-overlay-pane canvas { pointer-events: none !important; }
 
 /* Sidebar */
 .sidebar {

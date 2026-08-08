@@ -3,8 +3,6 @@ import L from 'leaflet';
 let velocityLayer: any = null;
 let windActive = false;
 let windData: any = null;
-let mapRef: L.Map | null = null;
-let resizeTimer: ReturnType<typeof setTimeout> | null = null;
 let shiftTimer: ReturnType<typeof setInterval> | null = null;
 
 const WIND_DATA_URL = 'https://raw.githubusercontent.com/danwild/leaflet-velocity/master/demo/wind-global.json';
@@ -32,23 +30,8 @@ function createVelocityLayer(data: any): any {
     particleAge: 60,
     frameRate: 5,
     opacity: 0.6,
+    pane: 'overlayPane',
   });
-}
-
-// Only handle resize (grid toggle) — NOT move/zoom
-function onResize() {
-  if (!windActive || !mapRef || !velocityLayer) return;
-  if (resizeTimer) clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => {
-    try {
-      // Soft refresh: update data in place without removing layer
-      const shifted = shiftWindData(windData);
-      if (typeof velocityLayer.setData === 'function') {
-        velocityLayer.setData(shifted);
-      }
-      mapRef?.invalidateSize();
-    } catch {}
-  }, 300);
 }
 
 export async function toggleWindOnMap(map: L.Map): Promise<boolean> {
@@ -57,7 +40,6 @@ export async function toggleWindOnMap(map: L.Map): Promise<boolean> {
 }
 
 async function showWindOnMap(map: L.Map): Promise<boolean> {
-  mapRef = map;
   try {
     await import('leaflet-velocity');
     if (!windData) {
@@ -66,15 +48,14 @@ async function showWindOnMap(map: L.Map): Promise<boolean> {
       windData = await res.json();
     }
 
+    if (velocityLayer) { map.removeLayer(velocityLayer); velocityLayer = null; }
+
     const shifted = shiftWindData(windData);
     velocityLayer = createVelocityLayer(shifted);
     velocityLayer.addTo(map);
     windActive = true;
 
-    // Only handle resize (grid toggle), not zoom/pan
-    map.on('resize', onResize);
-
-    // Gentle data refresh every 20s — shifts pattern subtly
+    // Subtle pattern shift every 30s — uses setData (no flicker)
     if (shiftTimer) clearInterval(shiftTimer);
     shiftTimer = setInterval(() => {
       if (!windActive || !velocityLayer) return;
@@ -82,7 +63,7 @@ async function showWindOnMap(map: L.Map): Promise<boolean> {
         const s = shiftWindData(windData);
         if (typeof velocityLayer.setData === 'function') velocityLayer.setData(s);
       } catch {}
-    }, 20000);
+    }, 30000);
 
     return true;
   } catch (e) { console.warn('Wind particles failed:', e); return false; }
@@ -90,10 +71,8 @@ async function showWindOnMap(map: L.Map): Promise<boolean> {
 
 export function removeWindFromMap(map: L.Map) {
   if (velocityLayer) { map.removeLayer(velocityLayer); velocityLayer = null; }
-  windActive = false; mapRef = null;
-  if (resizeTimer) { clearTimeout(resizeTimer); resizeTimer = null; }
+  windActive = false;
   if (shiftTimer) { clearInterval(shiftTimer); shiftTimer = null; }
-  map.off('resize', onResize);
 }
 
 export function isWindActive() { return windActive; }
