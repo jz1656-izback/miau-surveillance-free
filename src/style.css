@@ -118,6 +118,10 @@ body::after {
 }
 @keyframes windyPulse { 0%,100%{box-shadow:0 0 2px rgba(0,150,255,0.2)} 50%{box-shadow:0 0 8px rgba(0,150,255,0.4)} }
 
+/* Windy tile overlays must render on top */
+.leaflet-overlay-pane { z-index: 400 !important; }
+.windy-tile-overlay { pointer-events: none !important; opacity: 0.8 !important; }
+
 /* Sidebar */
 .sidebar {
   width: 600px; background: var(--bg2); border-left: 1px solid var(--border);
