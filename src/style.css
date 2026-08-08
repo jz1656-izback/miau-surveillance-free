@@ -12,7 +12,7 @@
   --green2: rgba(0,200,100,0.08);
   --border: rgba(0,200,100,0.06);
   --popup-bg: #081018;
-  --scanlines: rgba(0,200,100,0.012);
+  --scanlines: rgba(0,255,100,0.06);
 }
 
 [data-theme="dark"] {
@@ -23,7 +23,9 @@
   --green2: rgba(88,166,255,0.08);
   --border: rgba(88,166,255,0.08);
   --popup-bg: #161b22;
-  --scanlines: transparent;
+  --scanlines: rgba(100,160,255,0.03);
+  --green: #58a6ff;
+  --green2: rgba(88,166,255,0.08);
 }
 
 [data-theme="matrix"] {

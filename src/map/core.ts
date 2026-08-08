@@ -1,11 +1,13 @@
 import L from 'leaflet';
 import 'leaflet.markercluster';
 import { getWindyTileUrl, WindyLayer } from '../api/windy';
+import { showWindParticles, removeWindParticles } from './wind-particles';
 
 let map: L.Map | null = null;
 let currentTile: L.TileLayer | null = null;
 let windyOverlays: L.TileLayer[] = [];
 let windyMode = false;
+let particleMode = false;
 
 export const TILE_LAYERS: Record<string, { name: string; url: string; attr: string }> = {
   dark: {
@@ -117,9 +119,27 @@ export function removeWindyOverlay() {
   windyOverlays.forEach(o => map!.removeLayer(o));
   windyOverlays = [];
   windyMode = false;
+  particleMode = false;
+  removeWindParticles(map);
   switchTile('dark');
   updateWindyUI();
 }
+
+export async function toggleParticleMode() {
+  if (!map) return;
+  particleMode = !particleMode;
+  if (particleMode) {
+    switchTile('windy');
+    const ok = await showWindParticles(map);
+    if (!ok) { particleMode = false; switchTile('dark'); }
+  } else {
+    removeWindParticles(map);
+    if (!windyMode) switchTile('dark');
+  }
+  updateWindyUI();
+}
+
+export function isParticleMode() { return particleMode; }
 
 function updateWindyUI() {
   const btn = document.getElementById('windy-mode-btn');

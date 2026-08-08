@@ -2,7 +2,7 @@ import { state, notify, subscribe, saveFavorites } from '../store/state';
 import { CAMERAS, CAMERA_TYPES, Camera } from '../data/cameras';
 import { CONFLICTS } from '../data/conflicts';
 import { MILITARY } from '../data/military';
-import { initMap, flyTo, fitBounds, getMap, switchTile, toggleWindyMode, toggleSingleWindyLayer, removeWindyOverlay } from '../map/core';
+import { initMap, flyTo, fitBounds, getMap, switchTile, toggleWindyMode, toggleSingleWindyLayer, removeWindyOverlay, toggleParticleMode } from '../map/core';
 import { createLayer, layers, toggleLayer, showOnlyLayer, showAllLayers } from '../map/layers';
 import { createCameraMarker, createConflictMarker, createMilitaryMarker, createFlightMarker, createQuakeMarker, createDisasterMarker, createWeatherMarker, createWildfireMarker, createIssMarker, createLightningMarker, clearMarkers, embedUrl } from '../map/markers';
 import { fetchFlights } from '../api/flights';
@@ -66,6 +66,7 @@ function renderApp(): string {
       <span>✈<b id="cf">0</b></span><span>🌍<b id="cq">0</b></span><span>⚠<b id="cd">0</b></span><span>🌤<b id="cw">0</b></span>
       <span>🔥<b id="cfire">0</b></span><span>🛰<b id="ciss">-</b></span><span>⚡<b id="clit">0</b></span>
       <button class="rfbtn windy-mode-btn" id="windy-mode-btn" title="Windy Weather Mode">🌪 Windy</button>
+      <button class="rfbtn windy-mode-btn" id="windy-particle-btn" title="Wind Particles Animation">🌊 Flow</button>
       <button class="rfbtn" id="grid-btn" title="Grid View">🖥</button>
       <button class="rfbtn" id="terminal-btn" title="Terminal">⌨️</button>
       <button class="rfbtn" id="voice-btn" title="Voice">🔇</button>
@@ -706,6 +707,8 @@ export async function initApp() {
   // Windy Mode button
   const windyBtn = document.getElementById('windy-mode-btn');
   if (windyBtn) windyBtn.addEventListener('click', () => toggleWindyMode());
+  const particleBtn = document.getElementById('windy-particle-btn');
+  if (particleBtn) particleBtn.addEventListener('click', () => { toggleParticleMode(); particleBtn.classList.toggle('on'); });
 
   // Refresh button
   document.getElementById('rfbtn')!.addEventListener('click', () => { refreshAll(); toast('🐱 Miau! Refreshing...', 1500); });
