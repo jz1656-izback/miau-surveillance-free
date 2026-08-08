@@ -6,8 +6,7 @@ let velocityLayer: any = null;
 // Fetch wind data from Windy API and render as animated particles
 export async function showWindParticles(map: L.Map) {
   try {
-    const Velocity = (await import('leaflet-velocity')).default;
-    
+    await import('leaflet-velocity'); // registers L.velocityLayer
     // Remove existing layer
     if (velocityLayer) {
       map.removeLayer(velocityLayer);
@@ -43,7 +42,7 @@ export async function showWindParticles(map: L.Map) {
     if (!windData.ok) throw new Error('Data fetch failed');
     const data = await windData.json();
 
-    velocityLayer = L.velocityLayer({
+    velocityLayer = (L as any).velocityLayer({
       displayValues: true,
       displayOptions: {
         velocityType: 'Global Wind',
