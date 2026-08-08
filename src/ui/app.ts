@@ -32,6 +32,7 @@ import { addEvent, loadHistory } from '../tracking/history';
 import { findNearby, correlateEvent, autoCorrelate, findClusters } from '../tracking/correlation';
 import { logger, initLogPanel } from '../utils/logger';
 import { $$, safeText, safeHTML, safeOnClick } from '../utils/dom';
+import { getRules, toggleRule, getAlertHistory, requestPermission, checkAlert, playAlertSound } from './alert-system';
 
 const REFRESH_INTERVAL = 60000;
 
@@ -147,7 +148,19 @@ function renderApp(): string {
       </div>
       <div class="panel" id="correlation-panel" style="display:none">
         <div class="p-title" style="color:#ffaa00">🔗 CORRELATION <span class="badge" id="scorr">-</span></div>
-        <div class="p-body" id="corrl"><div class="ld">Click on the map or an event to see related activity</div></div>
+        <div class="p-body" id="corrl"><div class="ld">Click on the map to see related activity</div></div>
+      </div>
+      <div class="panel" id="alert-panel">
+        <div class="p-title" style="color:#ff4444">🚨 ALERTS <span class="badge" id="salert">-</span>
+          <button class="fav-btn" id="alert-perm-btn" style="font-size:7px">🔔 Allow</button>
+        </div>
+        <div class="p-body" id="alertl">
+          ${getRules().map(r => `<div class="item" style="font-size:9px">
+            <div class="i-h"><span class="i-t ${r.enabled ? 'r' : ''}">${r.enabled ? '🔔' : '🔕'}</span>
+            <span class="i-n" style="font-size:9px">${r.type}${r.threshold ? ' ≥ ' + r.threshold : ''}</span>
+            <span class="fav-star" data-alert="${r.id}">${r.enabled ? 'ON' : 'OFF'}</span></div>
+          </div>`).join('')}
+        </div>
       </div>
     </div>
   </div>
@@ -531,7 +544,7 @@ async function refreshAll() {
     const layer = layers.get('quake')!;
     clearMarkers(layer.group);
     const quakes = await fetchQuakes();
-    quakes.forEach(q => { createQuakeMarker(q.lat, q.lon, q.mag, q.place, q.depth).addTo(layer.group); if (q.mag >= 3) addEvent({ id: '', timestamp: Date.now(), type: 'quake', lat: q.lat, lon: q.lon, label: 'M' + q.mag.toFixed(1) + ' ' + q.place, magnitude: q.mag }); });
+    quakes.forEach(q => { createQuakeMarker(q.lat, q.lon, q.mag, q.place, q.depth).addTo(layer.group); if (q.mag >= 3) { addEvent({ id: '', timestamp: Date.now(), type: 'quake', lat: q.lat, lon: q.lon, label: 'M' + q.mag.toFixed(1) + ' ' + q.place, magnitude: q.mag }); checkAlert('quake', q.mag, 'M' + q.mag.toFixed(1) + ' quake near ' + q.place); }});
     document.getElementById('cq')!.textContent = quakes.length.toString();
     document.getElementById('fl')!.innerHTML = `<div class="section-hd">🌍 QUAKES (${quakes.length})</div>${quakes.slice(0, 15).map(q => {
       const tag = q.mag >= 5 ? 'r' : q.mag >= 3 ? 'o' : 'g';
@@ -665,6 +678,13 @@ export async function initApp() {
   try { initVoice(); } catch (e) { console.warn('Voice init failed:', e); }
   try { initCatMascot(); } catch (e) { console.warn('Cat mascot init failed:', e); }
   try { initEasterEggs(); } catch (e) { console.warn('Easter eggs init failed:', e); }
+
+  // Alert panel
+  document.getElementById('alert-perm-btn')?.addEventListener('click', () => requestPermission());
+  document.getElementById('alertl')?.addEventListener('click', (e) => {
+    const star = (e.target as HTMLElement).closest('.fav-star') as HTMLElement;
+    if (star?.dataset.alert) toggleRule(star.dataset.alert);
+  });
 
   // Timeline
   loadHistory();
