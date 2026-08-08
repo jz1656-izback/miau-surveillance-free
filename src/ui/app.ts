@@ -26,6 +26,7 @@ import { initCitySearch } from './city-panel';
 import { fetchTrafficCams } from '../api/traffic-cams';
 import { createTrafficMarker } from '../map/markers';
 import { initCatMascot } from './cat-mascot';
+import { initTracking } from '../tracking/layer';
 
 const REFRESH_INTERVAL = 60000;
 
@@ -689,6 +690,9 @@ export async function initApp() {
     const trafficCams = await fetchTrafficCams();
     trafficCams.forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
   } catch (e) { console.warn('Traffic cam load failed:', e); }
+
+  // Start tracking (flights, satellites, ships)
+  try { initTracking(); } catch (e) { console.warn('Tracking init failed:', e); }
 
   // Initial fetch + periodic refresh
   refreshAll();
