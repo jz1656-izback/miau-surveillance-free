@@ -9,5 +9,11 @@ export default defineConfig({
     port: 5199,
     strictPort: true,
     host: true
-  }
+  },
+  build: {
+    target: 'es2022',
+  },
+  optimizeDeps: {
+    exclude: ['satellite.js'],
+  },
 });
