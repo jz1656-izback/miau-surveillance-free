@@ -777,6 +777,9 @@ export async function initApp() {
   // Start tracking (flights, satellites, ships)
   try { initTracking(); } catch (e) { console.warn('Tracking init failed:', e); }
 
+  // Enable jet streams by default
+  setTimeout(() => { toggleWindParticles(); const btn = document.getElementById('windy-particle-btn'); if (btn) btn.classList.add('on'); }, 2000);
+
   // Initial fetch + periodic refresh
   refreshAll();
   setInterval(refreshAll, REFRESH_INTERVAL);
