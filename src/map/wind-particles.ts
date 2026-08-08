@@ -4,7 +4,8 @@ let velocityLayer: any = null;
 let windActive = false;
 let windData: any = null;
 let mapRef: L.Map | null = null;
-let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+let shiftTimer: ReturnType<typeof setInterval> | null = null;
 
 const WIND_DATA_URL = 'https://raw.githubusercontent.com/danwild/leaflet-velocity/master/demo/wind-global.json';
 
@@ -20,11 +21,7 @@ function shiftWindData(data: any): any {
 function createVelocityLayer(data: any): any {
   return (L as any).velocityLayer({
     displayValues: true,
-    displayOptions: {
-      velocityType: 'Global Wind',
-      position: 'bottomleft',
-      emptyString: 'No wind data',
-    },
+    displayOptions: { velocityType: 'Global Wind', position: 'bottomleft', emptyString: 'No wind data' },
     data,
     maxVelocity: 15,
     colorScale: [
@@ -38,28 +35,24 @@ function createVelocityLayer(data: any): any {
   });
 }
 
-// Debounced reinitialize on map movement
-function onMapMove() {
-  if (!windActive || !mapRef || !windData) return;
-  if (debounceTimer) clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => {
+// Only handle resize (grid toggle) — NOT move/zoom
+function onResize() {
+  if (!windActive || !mapRef || !velocityLayer) return;
+  if (resizeTimer) clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
     try {
-      if (velocityLayer) {
-        mapRef!.removeLayer(velocityLayer);
-        velocityLayer = null;
-      }
+      // Soft refresh: update data in place without removing layer
       const shifted = shiftWindData(windData);
-      velocityLayer = createVelocityLayer(shifted);
-      velocityLayer.addTo(mapRef!);
+      if (typeof velocityLayer.setData === 'function') {
+        velocityLayer.setData(shifted);
+      }
+      mapRef?.invalidateSize();
     } catch {}
-  }, 200);
+  }, 300);
 }
 
 export async function toggleWindOnMap(map: L.Map): Promise<boolean> {
-  if (windActive) {
-    removeWindFromMap(map);
-    return false;
-  }
+  if (windActive) { removeWindFromMap(map); return false; }
   return await showWindOnMap(map);
 }
 
@@ -67,10 +60,9 @@ async function showWindOnMap(map: L.Map): Promise<boolean> {
   mapRef = map;
   try {
     await import('leaflet-velocity');
-
     if (!windData) {
       const res = await fetch(WIND_DATA_URL, { signal: AbortSignal.timeout(10000) });
-      if (!res.ok) throw new Error('Wind data fetch failed');
+      if (!res.ok) throw new Error('Wind fetch failed');
       windData = await res.json();
     }
 
@@ -79,29 +71,29 @@ async function showWindOnMap(map: L.Map): Promise<boolean> {
     velocityLayer.addTo(map);
     windActive = true;
 
-    // Re-render on any map movement
-    map.on('moveend', onMapMove);
-    map.on('zoomend', onMapMove);
-    map.on('resize', onMapMove);
+    // Only handle resize (grid toggle), not zoom/pan
+    map.on('resize', onResize);
+
+    // Gentle data refresh every 20s — shifts pattern subtly
+    if (shiftTimer) clearInterval(shiftTimer);
+    shiftTimer = setInterval(() => {
+      if (!windActive || !velocityLayer) return;
+      try {
+        const s = shiftWindData(windData);
+        if (typeof velocityLayer.setData === 'function') velocityLayer.setData(s);
+      } catch {}
+    }, 20000);
 
     return true;
-  } catch (e) {
-    console.warn('Wind particles failed:', e);
-    return false;
-  }
+  } catch (e) { console.warn('Wind particles failed:', e); return false; }
 }
 
 export function removeWindFromMap(map: L.Map) {
-  if (velocityLayer) {
-    map.removeLayer(velocityLayer);
-    velocityLayer = null;
-  }
-  windActive = false;
-  mapRef = null;
-  if (debounceTimer) { clearTimeout(debounceTimer); debounceTimer = null; }
-  map.off('moveend', onMapMove);
-  map.off('zoomend', onMapMove);
-  map.off('resize', onMapMove);
+  if (velocityLayer) { map.removeLayer(velocityLayer); velocityLayer = null; }
+  windActive = false; mapRef = null;
+  if (resizeTimer) { clearTimeout(resizeTimer); resizeTimer = null; }
+  if (shiftTimer) { clearInterval(shiftTimer); shiftTimer = null; }
+  map.off('resize', onResize);
 }
 
 export function isWindActive() { return windActive; }
