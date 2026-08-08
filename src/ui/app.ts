@@ -73,6 +73,7 @@ function renderApp(): string {
       <button class="rfbtn" id="voice-btn" title="Voice">🔇</button>
       <button class="rfbtn" id="rfbtn" title="Refresh (R)">↻</button>
       <span class="live" id="live-dot">● LIVE</span>
+      <span id="tracking-status" style="font-size:8px;color:#f44;margin-left:6px"></span>
     </div>
   </header>
   <div class="main">

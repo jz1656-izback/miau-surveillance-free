@@ -6,6 +6,7 @@ import { fetchAllSatellites, TRACKED_SATELLITES } from '../api/satellites';
 import { updateSatellites, getPosition, getOrbitalPath, SatellitePosition } from './orbit';
 import { getShips, Ship } from '../api/ships';
 import { toast } from '../ui/toast';
+import { logger } from '../utils/logger';
 
 let flightInterval: ReturnType<typeof setInterval> | null = null;
 let satelliteInterval: ReturnType<typeof setInterval> | null = null;
@@ -152,10 +153,34 @@ export function stopShipTracking() {
 
 // ── Init All Tracking ──
 
+function updateStatusBar() {
+  const el = document.getElementById('tracking-status');
+  if (!el) return;
+  const parts: string[] = [];
+  if (flightInterval) parts.push('✈ Flights');
+  if (satelliteInterval) parts.push('🛰 Sats');
+  if (shipMarkers.size > 0) parts.push('🚢 Ships');
+  el.textContent = parts.length > 0 ? '📡 Tracking: ' + parts.join(' | ') : '';
+  el.style.color = parts.length > 0 ? '#0f0' : '#f44';
+}
+
 export async function initTracking() {
-  await Promise.all([
-    startFlightTracking(),
-    startSatelliteTracking(),
-  ]);
-  startShipTracking();
+  updateStatusBar();
+  try {
+    await startFlightTracking();
+    updateStatusBar();
+    toast('✈ Flight trails active', 2000);
+  } catch (e) { logger.error('TRACK', 'Flight tracking failed', e); }
+  
+  try {
+    await startSatelliteTracking();
+    updateStatusBar();
+  } catch (e) { logger.error('TRACK', 'Satellite tracking failed', e); }
+  
+  try {
+    startShipTracking();
+    updateStatusBar();
+  } catch (e) { logger.error('TRACK', 'Ship tracking failed', e); }
+  
+  updateStatusBar();
 }
