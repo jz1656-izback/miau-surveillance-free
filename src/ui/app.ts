@@ -31,6 +31,7 @@ import { initTimeline } from './timeline-bar';
 import { addEvent, loadHistory } from '../tracking/history';
 import { findNearby, correlateEvent, autoCorrelate, findClusters } from '../tracking/correlation';
 import { logger, initLogPanel } from '../utils/logger';
+import { $$, safeText, safeHTML, safeOnClick } from '../utils/dom';
 
 const REFRESH_INTERVAL = 60000;
 
@@ -497,6 +498,7 @@ subscribe(() => {
 let countdown = REFRESH_INTERVAL;
 
 async function refreshAll() {
+  try {
   const start = Date.now();
 
   // Disasters
@@ -595,16 +597,19 @@ async function refreshAll() {
     }
   } catch (e) { /* silent */ }
 
-  document.getElementById('lr')!.textContent = `Last: ${new Date().toLocaleTimeString()} (${Date.now() - start}ms)`;
-  document.getElementById('live-dot')!.textContent = '● LIVE';
+  safeText('lr', `Last: ${new Date().toLocaleTimeString()} (${Date.now() - start}ms)`);
+  safeText('live-dot', '● LIVE');
   countdown = REFRESH_INTERVAL;
+  } catch (e) { logger.warn('REFRESH', 'Refresh error (non-fatal)', e); }
 }
 
 // ── Init ──
 
 export async function initApp() {
-  // Render app shell
-  document.getElementById('app')!.innerHTML = renderApp();
+  // Render app shell (safely)
+  const appEl = document.getElementById('app');
+  if (!appEl) { logger.error('APP', 'No #app element in DOM'); return; }
+  appEl.innerHTML = renderApp();
 
   // Init theme
   initTheme();
