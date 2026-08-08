@@ -49,7 +49,7 @@ async function showWindOnMap(map: L.Map): Promise<boolean> {
         'rgb(255,50,0)',   // very strong
         'rgb(200,0,200)',  // storm
       ],
-      lineWidth: 1.5,
+      lineWidth: 5,
       particleAge: 90,
       frameRate: 10,
       opacity: 0.6,

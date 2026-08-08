@@ -1,7 +1,7 @@
-# 🐱 Miau Surveillance Free v3.0
+# 🐱 Miau Surveillance Free v4.0
 
-> **Surveillance Toolkit built by cats, made in Germany.**  
-> Even cats use it.
+> **Surveillance Toolkit built by cats, made in Germany.**
+> 128 global cameras · 10 live data layers · 7000+ traffic cams · Wind particles
 
 ---
 
@@ -10,78 +10,73 @@
 ```bash
 npm install
 npm run dev      # → http://localhost:5199
+npm run present  # → http://localhost:5200 (presentation)
 ```
 
-## ⌨️ Keyboard Shortcuts
+## 📡 Live Data Layers
+
+| Layer | Source | Update | Count |
+|-------|--------|--------|-------|
+| 📷 CCTV | YouTube + EarthCam | Static | 128 cams |
+| ⚔ Conflicts | Curated zones | Static | 50 zones |
+| ★ Military | Nuclear + bases | Static | 50 installations |
+| ✈ Flights | OpenSky ADS-B | 30s | 80+ live |
+| 🌍 Quakes | USGS | 60s | 100+ daily |
+| ⚠ Disasters | NASA EONET | 60s | 20+ events |
+| 🌤 Weather | Open-Meteo | 60s | 15 cities |
+| 🔥 Wildfires | NASA FIRMS | 60s | 500+ hotspots |
+| 🛰 ISS | Open-Notify | 2s | 3 satellites |
+| ⚡ Lightning | Blitzortung | 60s | 200+ strikes |
+| 🚦 Traffic | OpenTrafficCamMap | On load | 7,000+ cams |
+
+## 🎯 Tracking Features
+
+| Feature | Detail |
+|---------|--------|
+| ✈ Flight trails | 60-minute history, military detection |
+| 🛰 Satellites | ISS + Hubble + Tiangong with orbital paths |
+| 🚢 Ships | 12 demo vessels, AIS-ready |
+| 🕰 Timeline | 24h scrubber, playback 1x-600x |
+| 🔗 Correlation | Click map → related events within 200km |
+| 🚨 Alerts | Push notifications, configurable rules |
+| 🛰 Pass predictions | ISS + Hubble next 12h overflights |
+
+## 🎮 Controls
 
 | Key | Action |
 |-----|--------|
-| `⌘K` / `Ctrl+K` | Command palette — search cameras, filter, change theme |
-| `1`–`7` | Switch layer tabs |
-| `8` | Show all layers |
-| `R` | Refresh all live data |
-| `F` | Toggle fullscreen |
+| `Alt+K` | Command palette |
+| `1`–`8` | Layer tabs |
+| `R` | Refresh |
+| `F` | Fullscreen |
 | `?` | Help overlay |
-| `Tab` | Cycle theme (CRT → Dark → Matrix) |
-| `Esc` | Close modals / palette |
+| `Tab` | Cycle theme |
+| `~` | Log panel |
 
-## 🎨 Themes
+## 🎨 Features
 
-- **CRT** — Green-on-black with scanlines (default)
-- **Dark** — Blue-tinted GitHub-dark style
-- **Matrix** — Pure green terminal, no distractions
+- 🌊 **Wind particles** — animated jet streams on map
+- 🖥 **Grid view** — 4/9/16 cameras simultaneously
+- ⌨️ **Terminal** — `help`, `status`, `go tokyo`, `cat`
+- 🎤 **Voice** — "Show cameras", "Go to Tokyo"
+- 📰 **News ticker** — GDELT global headlines
+- 🏆 **Achievements** — First Watch, Globe Trotter, Katastrophenschutz
+- 😺 **Cat mascot** — click for cat surveillance facts
+- 🌪 **Windy mode** — 5 weather tile overlays
+- 📺 **CRT scanlines** — 3 themes (CRT/Dark/Matrix)
+- ~~~ **Log panel** — press tilde for debug logs
 
-## 📡 Data Sources
+## 🧪 Tests
 
-| Layer | Source | Update |
-|-------|--------|--------|
-| 📷 CCTV | EarthCam + YouTube Live | Static + embed |
-| ⚔ Conflicts | Curated global conflict zones | Static |
-| ★ Military | Nuclear + military bases | Static |
-| ✈ Flights | OpenSky Network ADS-B | 60s |
-| 🌍 Quakes | USGS Earthquake API | 60s |
-| ⚠ Disasters | NASA EONET | 60s |
-| 🌤 Weather | Open-Meteo (15 cities) | 60s |
+**36 automated tests** across 6 test files:
+- Logger (5), DOM helpers (5), Data validation (9)
+- Tracking (5), History store (5), Correlation (4), Alerts (3)
 
-## 🏗 Architecture
+## 📦 Export
 
-```
-src/
-├── main.ts              # Entry point
-├── style.css            # All styles (CSS custom properties for theming)
-├── map/
-│   ├── core.ts          # Leaflet map init, flyTo, fitBounds
-│   ├── layers.ts        # Layer groups + marker clustering
-│   └── markers.ts       # Marker factories for all data types
-├── data/
-│   ├── cameras.ts       # 50 global CCTV cameras
-│   ├── conflicts.ts     # 50 conflict zones
-│   └── military.ts      # 50 military installations
-├── api/
-│   ├── flights.ts       # OpenSky ADS-B API
-│   └── data.ts          # USGS, NASA EONET, Open-Meteo APIs
-├── ui/
-│   ├── app.ts           # Main app shell + refresh logic
-│   ├── modal.ts         # Video modal player
-│   └── toast.ts         # Toast notifications
-├── store/
-│   └── state.ts         # Reactive state management
-└── utils/
-    ├── keyboard.ts      # Keyboard shortcuts
-    └── theme.ts         # Theme system
-```
-
-## 🔧 Build
-
-```bash
-npm run build    # → dist/
-npm run preview  # Preview production build
-```
-
-## 📦 PWA
-
-Installable as a standalone app. Works offline for cached resources.
+Terminal: `cam export` — exports custom cameras as JSON
+Dashboard state exportable via JSON
 
 ---
 
-*Miau Surveillance Free — No API keys. No tracking. Just cats and surveillance.*
+*No API keys needed. Built by cats. For cats. In Germany. Miau.*
