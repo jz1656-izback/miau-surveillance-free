@@ -2,7 +2,7 @@ import { state, notify, subscribe, saveFavorites } from '../store/state';
 import { CAMERAS, CAMERA_TYPES, Camera } from '../data/cameras';
 import { CONFLICTS } from '../data/conflicts';
 import { MILITARY } from '../data/military';
-import { initMap, flyTo, fitBounds, getMap, switchTile, toggleWindyMode, toggleSingleWindyLayer, removeWindyOverlay, toggleParticleMode } from '../map/core';
+import { initMap, flyTo, fitBounds, getMap, switchTile, toggleWindyMode, toggleSingleWindyLayer, removeWindyOverlay, toggleWindParticles } from '../map/core';
 import { createLayer, layers, toggleLayer, showOnlyLayer, showAllLayers } from '../map/layers';
 import { createCameraMarker, createConflictMarker, createMilitaryMarker, createFlightMarker, createQuakeMarker, createDisasterMarker, createWeatherMarker, createWildfireMarker, createIssMarker, createLightningMarker, clearMarkers, embedUrl } from '../map/markers';
 import { fetchFlights } from '../api/flights';
@@ -68,7 +68,7 @@ function renderApp(): string {
       <span>✈<b id="cf">0</b></span><span>🌍<b id="cq">0</b></span><span>⚠<b id="cd">0</b></span><span>🌤<b id="cw">0</b></span>
       <span>🔥<b id="cfire">0</b></span><span>🛰<b id="ciss">-</b></span><span>⚡<b id="clit">0</b></span>
       <button class="rfbtn windy-mode-btn" id="windy-mode-btn" title="Windy Weather Mode">🌪 Windy</button>
-      <button class="rfbtn windy-mode-btn" id="windy-full-btn" title="Windy.com Full View">🌍 Windy.com</button>
+      <button class="rfbtn windy-mode-btn" id="windy-particle-btn" title="Animated Wind Particles">🌊 Jet Stream</button>
       <button class="rfbtn" id="grid-btn" title="Grid View">🖥</button>
       <button class="rfbtn" id="terminal-btn" title="Terminal">⌨️</button>
       <button class="rfbtn" id="voice-btn" title="Voice">🔇</button>
@@ -284,14 +284,6 @@ function renderApp(): string {
     <div class="log-hdr">🐱 Miau Logs (press ~ to toggle)</div>
     <div class="log-body" id="log-panel"></div>
   </div>
-</div>
-
-<div class="windy-overlay" id="windy-overlay">
-  <div class="windy-hdr">
-    <span>🌍 Windy.com — Global Weather</span>
-    <button onclick="document.getElementById('windy-overlay').style.display='none'">✕ Close</button>
-  </div>
-  <iframe id="windy-iframe" src="" allowfullscreen style="flex:1;border:0"></iframe>
 </div>
 `;
 }
@@ -741,19 +733,9 @@ export async function initApp() {
   // Windy Mode button
   const windyBtn = document.getElementById('windy-mode-btn');
   if (windyBtn) windyBtn.addEventListener('click', () => toggleWindyMode());
-  // Windy.com full view
-  const fullWindyBtn = document.getElementById('windy-full-btn');
-  if (fullWindyBtn) fullWindyBtn.addEventListener('click', () => {
-    const overlay = document.getElementById('windy-overlay')!;
-    const iframe = document.getElementById('windy-iframe') as HTMLIFrameElement;
-    if (overlay.style.display === 'flex') {
-      overlay.style.display = 'none';
-      iframe.src = '';
-    } else {
-      iframe.src = `https://embed.windy.com/embed2.html?lat=20&lon=10&zoom=3&level=surface&overlay=wind&menu=&message=&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&detailLat=20&detailLon=10&metricWind=default&metricTemp=default&radarRange=-1`;
-      overlay.style.display = 'flex';
-    }
-  });
+  // Wind particles on map
+  const particleBtn = document.getElementById('windy-particle-btn');
+  if (particleBtn) particleBtn.addEventListener('click', () => { toggleWindParticles(); particleBtn.classList.toggle('on'); });
 
   // Refresh button
   document.getElementById('rfbtn')!.addEventListener('click', () => { refreshAll(); toast('🐱 Miau! Refreshing...', 1500); });
