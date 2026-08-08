@@ -29,6 +29,7 @@ import { initCatMascot } from './cat-mascot';
 import { initTracking } from '../tracking/layer';
 import { initTimeline } from './timeline-bar';
 import { addEvent, loadHistory } from '../tracking/history';
+import { findNearby, correlateEvent, autoCorrelate, findClusters } from '../tracking/correlation';
 
 const REFRESH_INTERVAL = 60000;
 
@@ -139,6 +140,10 @@ function renderApp(): string {
       <div class="panel" id="iss-panel">
         <div class="p-title" style="color:#fff">🛰 ISS TRACKER <span class="badge" id="siss">-</span></div>
         <div class="p-body" id="issl"><div class="ld">🐱 Cats tracking the ISS...</div></div>
+      </div>
+      <div class="panel" id="correlation-panel" style="display:none">
+        <div class="p-title" style="color:#ffaa00">🔗 CORRELATION <span class="badge" id="scorr">-</span></div>
+        <div class="p-body" id="corrl"><div class="ld">Click on the map or an event to see related activity</div></div>
       </div>
     </div>
   </div>
@@ -703,6 +708,22 @@ export async function initApp() {
     const trafficCams = await fetchTrafficCams();
     trafficCams.forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
   } catch (e) { console.warn('Traffic cam load failed:', e); }
+
+  // Map click → show related events within 200km
+  getMap().on('click', (e: any) => {
+    const { lat, lng } = e.latlng;
+    const group = correlateEvent({ id: '', timestamp: Date.now(), type: 'quake', lat, lon: lng, label: 'Map click' }, 200);
+    if (group.events.length > 0) {
+      document.getElementById('correlation-panel')!.style.display = '';
+      document.getElementById('corrl')!.innerHTML = 
+        `<div class="section-hd" style="color:#ffaa00">🔗 ${group.events.length} events within 200km</div>
+        <div style="padding:4px;font-size:9px;color:var(--dim)">${group.summary}</div>
+        ${group.events.slice(0, 10).map(e => `<div class="item" data-lat="${e.lat}" data-lon="${e.lon}">
+          <div class="i-h"><span class="i-t ${e.type === 'quake' ? 'r' : e.type === 'flight' ? 'p' : 'o'}">${e.type}</span>
+          <span class="i-n">${e.label}</span></div><div class="i-s">${new Date(e.timestamp).toLocaleTimeString()}</div>
+        </div>`).join('')}`;
+    }
+  });
 
   // Start tracking (flights, satellites, ships)
   try { initTracking(); } catch (e) { console.warn('Tracking init failed:', e); }
