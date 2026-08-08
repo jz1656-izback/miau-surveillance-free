@@ -24,7 +24,7 @@ import { addHistoryEvent } from './timeline';
 import { addCustomCamera, getAllCameras, getCustomCameras, removeCustomCamera, importCameras, exportCameras } from './custom-cameras';
 import { initCitySearch } from './city-panel';
 import { fetchTrafficCams } from '../api/traffic-cams';
-import { createTrafficMarker } from '../map/markers';
+import { scrapeDOTCameras } from '../api/dot-scraper';
 import { initCatMascot } from './cat-mascot';
 import { initTracking } from '../tracking/layer';
 import { initTimeline } from './timeline-bar';
@@ -754,9 +754,11 @@ export async function initApp() {
   // Load traffic cameras (one-time, 7000+ cameras)
   try {
     const tLayer = layers.get('traffic')!;
-    const trafficCams = await fetchTrafficCams();
-    trafficCams.forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
-  } catch (e) { console.warn('Traffic cam load failed:', e); }
+    const [otcCams, dotCams] = await Promise.all([fetchTrafficCams(), scrapeDOTCameras()]);
+    const allCams = [...otcCams, ...dotCams];
+    logger.info('APP', `Traffic cams: ${otcCams.length} (OTC) + ${dotCams.length} (DOT) = ${allCams.length} total`);
+    allCams.forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
+  } catch (e) { logger.warn('APP', 'Traffic cam load failed', e); }
 
   // Map click → show related events within 200km
   getMap().on('click', (e: any) => {
