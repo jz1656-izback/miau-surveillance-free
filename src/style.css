@@ -120,6 +120,22 @@ body::after {
 }
 @keyframes windyPulse { 0%,100%{box-shadow:0 0 2px rgba(0,150,255,0.2)} 50%{box-shadow:0 0 8px rgba(0,150,255,0.4)} }
 
+/* Windy.com full view */
+.windy-overlay {
+  position: fixed; inset: 0; z-index: 10050; display: none; flex-direction: column;
+  background: #000;
+}
+.windy-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 14px; background: #0a3d62; color: #fff; font-size: 13px;
+  flex-shrink: 0;
+}
+.windy-hdr button {
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; cursor: pointer; padding: 4px 12px; border-radius: 3px; font-family: inherit; font-size: 11px;
+}
+.windy-hdr button:hover { background: rgba(255,255,255,0.25); }
+
 /* Windy tile overlays */
 .windy-tile-overlay { pointer-events: none !important; }
 
