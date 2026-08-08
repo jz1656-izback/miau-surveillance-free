@@ -64,8 +64,8 @@ async function showWindOnMap(map: L.Map): Promise<boolean> {
         'rgb(200,0,200)',
       ],
       lineWidth: 5,
-      particleAge: 90,
-      frameRate: 8,
+      particleAge: 60,
+      frameRate: 5,
       opacity: 0.6,
     });
 
@@ -91,8 +91,8 @@ async function showWindOnMap(map: L.Map): Promise<boolean> {
             'rgb(255,255,0)', 'rgb(255,150,0)', 'rgb(255,50,0)', 'rgb(200,0,200)',
           ],
           lineWidth: 5,
-          particleAge: 90,
-          frameRate: 8,
+          particleAge: 60,
+          frameRate: 5,
           opacity: 0.6,
         });
         velocityLayer.addTo(mapRef);
@@ -128,8 +128,8 @@ function reinitializeParticles() {
           'rgb(255,255,0)', 'rgb(255,150,0)', 'rgb(255,50,0)', 'rgb(200,0,200)',
         ],
         lineWidth: 5,
-        particleAge: 90,
-        frameRate: 8,
+        particleAge: 60,
+        frameRate: 5,
         opacity: 0.6,
       });
       velocityLayer.addTo(mapRef!);

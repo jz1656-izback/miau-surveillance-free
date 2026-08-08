@@ -2,7 +2,7 @@ import L from 'leaflet';
 import { getMap } from '../map/core';
 import { FlightState, fetchFlights } from '../api/flights';
 import { updateFlight, clearOldTracks, getTrack } from './flight-paths';
-import { fetchAllSatellites, TRACKED_SATELLITES } from '../api/satellites';
+import { fetchTLE, TRACKED_SATELLITES } from '../api/satellites';
 import { updateSatellites, getPosition, getOrbitalPath, SatellitePosition } from './orbit';
 import { getShips, Ship } from '../api/ships';
 import { toast } from '../ui/toast';
@@ -45,7 +45,7 @@ export function stopFlightTracking() {
 
 export async function startSatelliteTracking() {
   try {
-    const tles = await fetchAllSatellites();
+    const tles = await fetchTLE('stations');
     updateSatellites(tles);
     toast(`🛰 Tracking ${tles.length} satellites`, 2000);
   } catch { /* */ }

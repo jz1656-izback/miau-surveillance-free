@@ -47,9 +47,11 @@ export function getMap(): L.Map {
 export function initMap(elementId: string): L.Map {
   map = L.map(elementId, {
     zoomControl: false,
-    minZoom: 2,
+    minZoom: 3,
     maxZoom: 18,
     preferCanvas: true,
+    fadeAnimation: false,
+    zoomAnimation: false,
   }).setView([20, 10], 3);
 
   switchTile('dark');
