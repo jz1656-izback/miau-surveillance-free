@@ -456,24 +456,11 @@ function bindSidebarClicks() {
 
 // ── Layer toggles ──
 
-  let trafficLoaded = false;
-  async function loadTrafficCameras() {
-    if (trafficLoaded) return;
-    trafficLoaded = true;
-    try {
-      const tLayer = layers.get('traffic')!;
-      const [otcCams, dotCams] = await Promise.all([fetchTrafficCams(), scrapeDOTCameras()]);
-      const allCams = [...otcCams, ...dotCams];
-      logger.info('APP', `Traffic cams: ${otcCams.length} (OTC) + ${dotCams.length} (DOT) = ${allCams.length} total`);
-      allCams.forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
-    } catch (e) { logger.warn('APP', 'Traffic cam load failed', e); }
-  }
 function bindLayerToggles() {
   document.getElementById('layers')!.addEventListener('click', e => {
     const btn = (e.target as HTMLElement).closest('button') as HTMLElement | null;
     if (!btn) return;
     const layer = btn.dataset.layer!;
-    if (layer === 'traffic') loadTrafficCameras();
     const on = toggleLayer(layer);
     btn.classList.toggle('on', on);
   });
@@ -482,7 +469,6 @@ function bindLayerToggles() {
     const btn = (e.target as HTMLElement).closest('button') as HTMLElement | null;
     if (!btn) return;
     const layer = btn.dataset.layer!;
-    if (layer === 'traffic') loadTrafficCameras();
     document.querySelectorAll('#tabs .tab').forEach(t => t.classList.remove('on'));
     btn.classList.add('on');
     if (!layer) showAllLayers();
@@ -781,6 +767,12 @@ export async function initApp() {
         </div>`).join('')}`;
     }
   });
+
+  // Load traffic cameras (background, non-blocking)
+  const tLayer = layers.get('traffic')!;
+  Promise.all([fetchTrafficCams(), scrapeDOTCameras()]).then(([otc, dot]) => {
+    [...otc, ...dot].forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
+  }).catch(() => {});
 
   // Defer heavy features to after page is interactive
   setTimeout(() => {
