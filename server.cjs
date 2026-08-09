@@ -87,7 +87,18 @@ const server = http.createServer((req, res) => {
   const url = req.url.split('?')[0];
   const method = req.method;
 
-  // Health check
+  // Camera cache (from scraper)
+  if (url === '/cameras-cache.json') {
+    try {
+      const data = fs.readFileSync(path.join(DIST, 'cameras-cache.json'));
+      res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=600', ...SECURITY_HEADERS });
+      res.end(data);
+    } catch {
+      res.writeHead(200, { 'Content-Type': 'application/json', ...SECURITY_HEADERS });
+      res.end('[]');
+    }
+    return;
+  }
   if (url === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json', ...SECURITY_HEADERS });
     res.end(JSON.stringify({ status: 'ok', uptime: process.uptime() }));

@@ -768,18 +768,16 @@ export async function initApp() {
     }
   });
 
-  // Load traffic cameras (background, non-blocking)
+  // Load traffic cameras from scraper cache (fast, always available)
   (async () => {
     try {
       const tLayer = layers.get('traffic');
-      if (!tLayer) { console.warn('Traffic layer not found'); return; }
-      console.log('Loading traffic cams...');
-      const [otc, dot] = await Promise.all([fetchTrafficCams(), scrapeDOTCameras()]);
-      console.log(`Traffic cams: ${otc.length} OTC + ${dot.length} DOT`);
-      const all = [...otc, ...dot];
-      all.forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
-      console.log(`Added ${all.length} traffic markers`);
-    } catch (e) { console.error('Traffic cam error:', e); }
+      if (!tLayer) return;
+      const res = await fetch('/cameras-cache.json');
+      const cams = await res.json();
+      cams.forEach((c: any) => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
+      console.log(`Traffic cams: ${cams.length} from cache`);
+    } catch (e) { console.warn('Traffic cam cache load failed', e); }
   })();
 
   // Defer heavy features to after page is interactive
