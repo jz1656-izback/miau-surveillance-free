@@ -119,9 +119,15 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // ═══ Presentation (root) ═══
-  if (url === '/' || url === '/index.html') {
+  // ═══ Presentation ═══
+  if (url === '/presentation' || url === '/presentation.html') {
     serveFile(res, path.join(DIST, 'presentation.html'), 'html');
+    return;
+  }
+
+  // ═══ Homepage (root) ═══
+  if (url === '/' || url === '/index.html') {
+    serveFile(res, path.join(DIST, 'index.html'), 'html');
     return;
   }
 
