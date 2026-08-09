@@ -5,13 +5,13 @@
 
 ---
 
-## 🚀 One-Line Install
+## 🚀 One-Line Install (Production)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jz1656-izback/miau-surveillance-free/main/install.sh | bash
 ```
 
-Or manually:
+Manually:
 ```bash
 git clone https://github.com/jz1656-izback/miau-surveillance-free.git
 cd miau-surveillance-free
@@ -21,12 +21,12 @@ cd miau-surveillance-free
 ## 🚀 Quick Start
 
 ```bash
-npm start        # → http://localhost:5199 (production, static files)
+npm start        # → http://localhost:5199 (production, zero deps)
 npm run dev      # → http://localhost:5199 (development, hot reload)
 npm run present  # → http://localhost:5200 (presentation page)
 ```
 
-Production uses `server.cjs` — a zero-dependency Node.js static server serving the built `dist/` folder. No Vite required at runtime.
+Production uses `server.cjs` — a 40-line Node.js static server. No build step at runtime. `dist/` is pre-built in the repo.
 
 ## 📡 Live Data Layers
 

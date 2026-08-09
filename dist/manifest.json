@@ -1,0 +1,12 @@
+{
+  "name": "Miau Surveillance Free",
+  "short_name": "MiauSurv",
+  "description": "Surveillance Toolkit built by cats, made in Germany",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a1418",
+  "theme_color": "#0a1418",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

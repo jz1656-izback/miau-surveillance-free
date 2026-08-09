@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐱 Miau Surveillance Free</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0a1418; color:#aaccee; font-family:'Courier New',monospace; min-height:100vh; overflow-x:hidden; }
+body::after { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,rgba(0,255,100,0.06) 0px,transparent 1px,transparent 2px); pointer-events:none; z-index:9999; }
+.hero { text-align:center; padding:60px 20px 40px; }
+.hero h1 { font-size:48px; background:linear-gradient(90deg,#00c864,#00aaff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:8px; }
+.hero .tagline { font-size:16px; color:rgba(130,150,180,0.5); margin-bottom:30px; }
+.hero .cta { display:inline-block; padding:14px 32px; background:rgba(0,200,100,0.15); border:1px solid #00c864; color:#00c864; text-decoration:none; font-size:16px; border-radius:6px; transition:all 0.2s; font-weight:700; }
+.hero .cta:hover { background:rgba(0,200,100,0.25); box-shadow:0 0 20px rgba(0,200,100,0.2); }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; padding:20px 40px; max-width:1200px; margin:0 auto; }
+.card { background:rgba(5,12,16,0.8); border:1px solid rgba(0,200,100,0.1); border-radius:8px; padding:20px; transition:all 0.2s; }
+.card:hover { border-color:rgba(0,200,100,0.3); background:rgba(5,18,20,0.9); }
+.card h3 { color:#00c864; font-size:14px; margin-bottom:8px; letter-spacing:1px; }
+.card p { font-size:11px; color:rgba(130,150,180,0.5); line-height:1.6; }
+.card .stat { font-size:24px; font-weight:700; color:#aaccee; margin:4px 0; }
+.section { text-align:center; padding:40px 20px; }
+.section h2 { color:#00c864; font-size:24px; margin-bottom:20px; letter-spacing:2px; }
+.footer { text-align:center; padding:40px; color:rgba(130,150,180,0.2); font-size:10px; border-top:1px solid rgba(0,200,100,0.04); }
+.features { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:8px; max-width:1000px; margin:0 auto; padding:0 20px; }
+.feature { padding:8px 14px; font-size:11px; color:rgba(130,150,180,0.4); border:1px solid rgba(0,200,100,0.05); border-radius:4px; }
+.feature b { color:#00c864; }
+</style>
+</head>
+<body>
+<div class="hero">
+  <h1>🐱 MIAU SURVEILLANCE FREE</h1>
+  <p class="tagline">Surveillance Toolkit · Built by cats · Made in Germany</p>
+  <a href="http://localhost:5199" class="cta">▶ Launch Surveillance Dashboard</a>
+</div>
+
+<div class="section"><h2>📡 Live Data Layers</h2></div>
+<div class="grid">
+  <div class="card"><h3>📷 CCTV Feeds</h3><div class="stat">128</div><p>Global cameras with YouTube live embeds. 6 continents, 50+ countries. Click to watch.</p></div>
+  <div class="card"><h3>✈ Flight Tracking</h3><div class="stat">80+</div><p>Live ADS-B aircraft with military detection. 60-minute flight trails on map.</p></div>
+  <div class="card"><h3>🛰 Satellite Tracking</h3><div class="stat">3</div><p>ISS, Hubble, Tiangong with real-time orbits. 90-minute path prediction.</p></div>
+  <div class="card"><h3>🔥 Wildfire Monitor</h3><div class="stat">500+</div><p>NASA FIRMS hotspots. 24-hour fire detection worldwide.</p></div>
+  <div class="card"><h3>🌍 Earthquakes</h3><div class="stat">100+</div><p>USGS live quake feed. Magnitude-colored markers on map.</p></div>
+  <div class="card"><h3>🚦 Traffic Cams</h3><div class="stat">7,029</div><p>US state DOT cameras. M3U8 video streams with HLS playback.</p></div>
+</div>
+
+<div class="section"><h2>🎮 Features</h2></div>
+<div class="features">
+  <div class="feature"><b>🌊 Jet Stream</b> — Animated wind particles on map</div>
+  <div class="feature"><b>🖥 Grid View</b> — 4/9/16 cameras at once</div>
+  <div class="feature"><b>⌨️ Terminal</b> — CLI with commands</div>
+  <div class="feature"><b>🎤 Voice</b> — "Show Tokyo"</div>
+  <div class="feature"><b>📰 News</b> — GDELT headlines</div>
+  <div class="feature"><b>🕰 Timeline</b> — 24h history scrubber</div>
+  <div class="feature"><b>🔗 Correlation</b> — Related events</div>
+  <div class="feature"><b>🚨 Alerts</b> — Push notifications</div>
+  <div class="feature"><b>🌪 Windy</b> — Weather overlays</div>
+  <div class="feature"><b>📺 CRT</b> — 3 themes</div>
+  <div class="feature"><b>⚡ Lightning</b> — Live strikes</div>
+  <div class="feature"><b>😺 Cat Mascot</b> — Facts on click</div>
+  <div class="feature"><b>⭐ Favorites</b> — Bookmark cameras</div>
+  <div class="feature"><b>🔍 Search</b> — Any city worldwide</div>
+  <div class="feature"><b>🗺 4 Tile Modes</b> — Dark/Satellite/Terrain/Streets</div>
+  <div class="feature"><b>🧪 36 Tests</b> — Automated test suite</div>
+</div>
+
+<div class="section"><h2>🧪 Quality</h2></div>
+<div class="grid">
+  <div class="card"><h3>Automated Tests</h3><div class="stat">36</div><p>6 test files: Logger, DOM, Data, Tracking, History, Correlation, Alerts</p></div>
+  <div class="card"><h3>TypeScript</h3><div class="stat">60+</div><p>Strict mode. Zero type errors. 60+ TypeScript modules.</p></div>
+  <div class="card"><h3>Error Recovery</h3><div class="stat">🛡</div><p>Safe DOM helpers. Log panel (~ key). Crash recovery overlay.</p></div>
+</div>
+
+<div class="footer">
+  <p>🐱 MIAU SURVEILLANCE FREE v4.0 — Built by cats. For cats. In Germany. Miau.</p>
+  <p style="margin-top:4px">No API keys needed. Open source. MIT License.</p>
+</div>
+</body>
+</html>
