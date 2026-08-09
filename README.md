@@ -5,12 +5,25 @@
 
 ---
 
+## 🚀 One-Line Install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jz1656-izback/miau-surveillance-free/main/install.sh | bash
+```
+
+Or manually:
+```bash
+git clone https://github.com/jz1656-izback/miau-surveillance-free.git
+cd miau-surveillance-free
+./install.sh
+```
+
 ## 🚀 Quick Start
 
 ```bash
-npm install
-npm run dev      # → http://localhost:5199
-npm run present  # → http://localhost:5200 (presentation)
+npm run dev      # → http://localhost:5199 (development, hot reload)
+npm run preview  # → http://localhost:5199 (production, fast)
+npm run present  # → http://localhost:5200 (presentation page)
 ```
 
 ## 📡 Live Data Layers
