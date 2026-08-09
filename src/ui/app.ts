@@ -769,10 +769,18 @@ export async function initApp() {
   });
 
   // Load traffic cameras (background, non-blocking)
-  const tLayer = layers.get('traffic')!;
-  Promise.all([fetchTrafficCams(), scrapeDOTCameras()]).then(([otc, dot]) => {
-    [...otc, ...dot].forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
-  }).catch(() => {});
+  (async () => {
+    try {
+      const tLayer = layers.get('traffic');
+      if (!tLayer) { console.warn('Traffic layer not found'); return; }
+      console.log('Loading traffic cams...');
+      const [otc, dot] = await Promise.all([fetchTrafficCams(), scrapeDOTCameras()]);
+      console.log(`Traffic cams: ${otc.length} OTC + ${dot.length} DOT`);
+      const all = [...otc, ...dot];
+      all.forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
+      console.log(`Added ${all.length} traffic markers`);
+    } catch (e) { console.error('Traffic cam error:', e); }
+  })();
 
   // Defer heavy features to after page is interactive
   setTimeout(() => {
