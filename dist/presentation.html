@@ -13,8 +13,8 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .container{max-width:880px;margin:0 auto;padding:0 40px}
 
 .hero{padding:80px 0 60px;text-align:center;position:relative;z-index:1}
-.hero pre{color:#00c864;font-size:20px;line-height:1.15;display:inline-block;text-align:left;margin:0 auto 24px}
-.hero h1{font-size:48px;background:linear-gradient(90deg,#00c864,#00aaff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 8px}
+.hero pre{color:#00c864;font-size:28px;line-height:1.1;display:inline-block;text-align:left;margin:0 auto 24px}
+.hero h1{font-size:56px;background:linear-gradient(90deg,#00c864,#00aaff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 8px}
 .hero .sub{font-size:13px;color:rgba(130,150,180,0.35);margin-bottom:32px}
 .hero .cta{display:inline-block;padding:12px 32px;background:rgba(0,200,100,0.1);border:1px solid rgba(0,200,100,0.3);color:#00c864;text-decoration:none;font-size:14px;border-radius:4px;font-weight:700;transition:all 0.2s}
 .hero .cta:hover{background:rgba(0,200,100,0.2);box-shadow:0 0 20px rgba(0,200,100,0.1)}
@@ -47,30 +47,41 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
 .footer{padding:60px 0;text-align:center;color:rgba(130,150,180,0.08);font-size:9px;border-top:1px solid rgba(0,200,100,0.02);position:relative;z-index:1}
 .footer a{color:rgba(130,150,180,0.12)}
-
-/* Floating emojis */
+/*
 .float{position:fixed;pointer-events:none;z-index:0;animation:drift linear infinite;opacity:0.05;font-size:28px}
 @keyframes drift{0%{transform:translateY(0) rotate(0deg)}100%{transform:translateY(-110vh) rotate(360deg)}}
-.floats-top{animation-name:driftTop}
-@keyframes driftTop{0%{transform:translateY(0) rotate(0deg)}100%{transform:translateY(110vh) rotate(-360deg)}}
+*/
 </style>
 </head>
 <body>
 <script>
-const emojis=['🐱','😺','😸','😹','😻','😼','😽','🙀','🔭','🚗','🔥','🌍','🛰','✈️','🛩','📷','📡','🔍','🐾','⚡','🌊','🖥','⌨️','🌪','💻','📊','🚨','⭐','😎'];
-for(let i=0;i<25;i++){
+const emojis=['🐱','😺','😸','😹','😻','😼','😽','🙀','🔭','🚗','🔥','🌍','🛰','✈️','🛩','📷','📡','🔍','🐾','⚡','🌊','🖥','⌨️','🌪','💻','🚨','⭐','😎'];
+
+function createFloat(){
   const e=document.createElement('div');
-  e.className='float';
+  e.style.cssText='position:fixed;pointer-events:none;z-index:0;font-size:28px';
   e.textContent=emojis[Math.floor(Math.random()*emojis.length)];
-  // Random starting position anywhere on screen
   e.style.left=(2+Math.random()*94)+'%';
-  e.style.top=(Math.random()*100)+'%';
-  e.style.animationDuration=(20+Math.random()*30)+'s';
-  e.style.animationDelay=-(Math.random()*25)+'s'; // negative = already in motion
   e.style.fontSize=(20+Math.random()*40)+'px';
   e.style.opacity=(0.03+Math.random()*0.04);
   document.body.appendChild(e);
+
+  let y=Math.random()*window.innerHeight;
+  let speed=0.15+Math.random()*0.4;
+  let rot=Math.random()*360;
+  let rotSpeed=(Math.random()-0.5)*0.4;
+
+  function step(){
+    y-=speed;
+    rot+=rotSpeed;
+    if(y<-60){y=window.innerHeight+40;rot=Math.random()*360}
+    e.style.transform=`translateY(${y}px) rotate(${rot}deg)`;
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
 }
+
+for(let i=0;i<25;i++)createFloat();
 </script>
 
 <div class="hero">
