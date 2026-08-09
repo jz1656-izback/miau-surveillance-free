@@ -461,6 +461,7 @@ function bindLayerToggles() {
     const btn = (e.target as HTMLElement).closest('button') as HTMLElement | null;
     if (!btn) return;
     const layer = btn.dataset.layer!;
+    if (layer === 'traffic') loadTrafficCameras();
     const on = toggleLayer(layer);
     btn.classList.toggle('on', on);
   });
@@ -469,6 +470,7 @@ function bindLayerToggles() {
     const btn = (e.target as HTMLElement).closest('button') as HTMLElement | null;
     if (!btn) return;
     const layer = btn.dataset.layer!;
+    if (layer === 'traffic') loadTrafficCameras();
     document.querySelectorAll('#tabs .tab').forEach(t => t.classList.remove('on'));
     btn.classList.add('on');
     if (!layer) showAllLayers();
@@ -765,11 +767,20 @@ export async function initApp() {
     } catch (e) { logger.warn('APP', 'Traffic cam load failed', e); }
   }
 
-  // Lazy-load traffic when user switches to traffic tab or toggles traffic layer
-  const origShowOnly = showOnlyLayer;
-  (window as any).showOnlyLayer = (layer: string) => { if (layer === 'traffic') loadTrafficCameras(); origShowOnly(layer); };
-  const origToggleLayer = toggleLayer;
-  (window as any).toggleLayer = (layer: string) => { if (layer === 'traffic') loadTrafficCameras(); return origToggleLayer(layer); };
+  // Load traffic cameras only when layer is activated (lazy, 7000+ cams)
+  let trafficLoaded = false;
+  async function loadTrafficCameras() {
+    if (trafficLoaded) return;
+    trafficLoaded = true;
+    try {
+      const tLayer = layers.get('traffic')!;
+      const [otcCams, dotCams] = await Promise.all([fetchTrafficCams(), scrapeDOTCameras()]);
+      const allCams = [...otcCams, ...dotCams];
+      logger.info('APP', `Traffic cams: ${otcCams.length} (OTC) + ${dotCams.length} (DOT) = ${allCams.length} total`);
+      allCams.forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
+    } catch (e) { logger.warn('APP', 'Traffic cam load failed', e); }
+  }
+
 
   // Map click → show related events within 200km
   getMap().on('click', (e: any) => {
