@@ -93,7 +93,10 @@ async function fetchDOT() {
 function dedupe(cams) {
   const seen = new Set();
   return cams.filter(c => {
-    const key = `${c.latitude.toFixed(3)},${c.longitude.toFixed(3)}`;
+    const lat = parseFloat(c.latitude) || 0;
+    const lon = parseFloat(c.longitude) || 0;
+    if (!lat || !lon) return false;
+    const key = `${lat.toFixed(3)},${lon.toFixed(3)}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
@@ -122,10 +125,12 @@ async function scrape() {
 }
 
 // Run immediately, then on interval
-scrape().then(() => {
-  log(`Scraper running every ${INTERVAL/60000}min`);
-  setInterval(scrape, INTERVAL);
-}).catch(e => {
-  log(`Fatal: ${e.message}`);
-  process.exit(1);
-});
+async function run() {
+  try {
+    await scrape();
+  } catch(e) {
+    log(`Error: ${e.message} — retrying in 5min`);
+  }
+  setTimeout(run, INTERVAL);
+}
+run();
