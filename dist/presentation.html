@@ -3,57 +3,62 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Miau Surveillance — Global surveillance toolkit. 128 cameras, 11 live data layers, 7,000+ traffic cams. Built by cats, made in Germany.">
+<meta name="description" content="Miau Surveillance — Global surveillance toolkit. 128 cameras, 11 live data layers. Built by cats, made in Germany.">
 <title>🐱 Miau Surveillance — Global Surveillance Toolkit</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a1418;color:#aaccee;font-family:'Courier New',monospace;line-height:1.6}
+body{background:#0a1418;color:#aaccee;font-family:'Courier New',monospace;line-height:1.6;overflow-x:hidden}
 body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,rgba(0,255,100,0.04) 0px,transparent 1px,transparent 2px);pointer-events:none;z-index:9999}
-.hero{text-align:center;padding:60px 20px 40px;background:linear-gradient(180deg,rgba(0,200,100,0.05),transparent);position:relative;z-index:1}
-.hero pre{color:#00c864;font-size:22px;line-height:1.2;margin-bottom:20px;display:inline-block;text-align:left}
+.hero{text-align:center;padding:80px 20px 50px;background:linear-gradient(180deg,rgba(0,200,100,0.06),transparent);position:relative;z-index:1}
+.hero pre{color:#00c864;font-size:22px;line-height:1.2;margin-bottom:20px;display:inline-block;text-align:left;user-select:none}
 .hero h1{font-size:52px;background:linear-gradient(90deg,#00c864,#00aaff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:12px 0}
-.hero .tag{font-size:15px;color:rgba(130,150,180,0.4);margin-bottom:28px}
+.hero .tag{font-size:15px;color:rgba(130,150,180,0.4);margin-bottom:8px}
+.hero .joke{font-size:11px;color:rgba(130,150,180,0.2);margin-bottom:28px;font-style:italic}
 .hero .cta{display:inline-block;padding:16px 40px;background:rgba(0,200,100,0.12);border:1px solid #00c864;color:#00c864;text-decoration:none;font-size:16px;border-radius:5px;font-weight:700;transition:all 0.2s}
 .hero .cta:hover{background:rgba(0,200,100,0.22);box-shadow:0 0 24px rgba(0,200,100,0.15)}
 .hero .links{margin-top:20px;display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
 .hero .links a{color:rgba(130,150,180,0.3);font-size:11px;text-decoration:none}
 .hero .links a:hover{color:rgba(130,150,180,0.6)}
-.stats{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;padding:20px 20px 40px;max-width:900px;margin:0 auto}
-.stat{text-align:center;min-width:80px}
+.stats{display:flex;justify-content:center;gap:48px;flex-wrap:wrap;padding:24px 20px 48px;margin:0 auto;position:relative;z-index:1}
+.stat{text-align:center;min-width:90px}
 .stat .n{font-size:36px;font-weight:700;color:#aaccee}
 .stat .l{font-size:10px;color:rgba(130,150,180,0.3);text-transform:uppercase;letter-spacing:1px}
-.section{padding:50px 20px 30px;max-width:1000px;margin:0 auto}
-.section h2{color:#00c864;font-size:22px;text-align:center;margin-bottom:28px;letter-spacing:2px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
-.card{background:rgba(5,12,16,0.8);border:1px solid rgba(0,200,100,0.08);border-radius:8px;padding:20px;text-align:center;transition:all 0.15s}
-.card:hover{border-color:rgba(0,200,100,0.2)}
-.card h3{color:#00c864;font-size:14px;margin-bottom:6px}
+.section{padding:40px 20px;max-width:1100px;margin:0 auto;position:relative;z-index:1}
+.section h2{color:#00c864;font-size:22px;text-align:center;margin-bottom:12px;letter-spacing:2px}
+.section .joke{font-size:10px;color:rgba(130,150,180,0.15);text-align:center;font-style:italic;margin-bottom:28px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:1100px;margin:0 auto}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.grid{grid-template-columns:1fr}}
+.card{background:rgba(5,12,16,0.85);border:1px solid rgba(0,200,100,0.08);border-radius:8px;padding:20px;text-align:center;transition:all 0.15s}
+.card:hover{border-color:rgba(0,200,100,0.2);transform:translateY(-1px)}
+.card h3{color:#00c864;font-size:13px;margin-bottom:6px}
 .card .num{font-size:26px;font-weight:700;color:#aaccee;margin:8px 0}
-.card p{font-size:11px;color:rgba(130,150,180,0.4)}
-.caps{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.cap{padding:8px 14px;font-size:11px;color:rgba(130,150,180,0.35);border:1px solid rgba(0,200,100,0.06);border-radius:4px;text-align:center}
+.card p{font-size:10px;color:rgba(130,150,180,0.35)}
+.caps{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:1100px;margin:0 auto}
+.cap{padding:8px 14px;font-size:10px;color:rgba(130,150,180,0.3);border:1px solid rgba(0,200,100,0.05);border-radius:4px;text-align:center}
 .cap b{color:#00c864}
-.footer{text-align:center;padding:50px 20px;color:rgba(130,150,180,0.12);font-size:10px;border-top:1px solid rgba(0,200,100,0.03)}
-.footer a{color:rgba(130,150,180,0.2)}
-.float{position:fixed;pointer-events:none;z-index:0;animation:float linear infinite;opacity:0.08;font-size:28px}
-@keyframes float{0%{transform:translateY(100vh) rotate(0deg) scale(0.5);opacity:0}10%{opacity:0.12}90%{opacity:0.12}100%{transform:translateY(-10vh) rotate(360deg) scale(1.5);opacity:0}}
+.footer{text-align:center;padding:50px 20px;color:rgba(130,150,180,0.1);font-size:10px;border-top:1px solid rgba(0,200,100,0.03);position:relative;z-index:1}
+.footer a{color:rgba(130,150,180,0.15)}
+.float{position:fixed;pointer-events:none;z-index:0;animation:drift linear infinite;opacity:0.07;font-size:30px}
+@keyframes drift{0%{transform:translateY(105vh) rotate(0deg) scale(0.6);opacity:0}5%{opacity:0.07}90%{opacity:0.07}100%{transform:translateY(-5vh) rotate(720deg) scale(1.3);opacity:0}}
 </style>
 </head>
 <body>
 <div id="floats"></div>
 <script>
-const emojis = ['🐱','😺','😸','😹','😻','😼','😽','🙀','😿','😾','🔭','🚗','🚙','🔥','🌍','🛰','✈️','🚁','🛩','📷','📡','🔍','🕵️','🐾','⚡','🌊','🖥','⌨️','🎯','🦉','🦅','🌪','💻','📊','🚨','⭐','🐕','🐈','😎','🤖'];
-for(let i=0;i<35;i++){
+const emojis=['🐱','😺','😸','😹','😻','😼','😽','🙀','😿','😾','🔭','🚗','🔥','🌍','🛰','✈️','🛩','📷','📡','🔍','🐾','⚡','🌊','🖥','⌨️','🦉','🌪','💻','📊','🚨','⭐','😎','🤖'];
+for(let i=0;i<30;i++){
   const e=document.createElement('div');
   e.className='float';
   e.textContent=emojis[Math.floor(Math.random()*emojis.length)];
-  e.style.left=Math.random()*95+'%';
-  e.style.animationDuration=(15+Math.random()*25)+'s';
-  e.style.animationDelay=Math.random()*20+'s';
-  e.style.fontSize=(20+Math.random()*40)+'px';
+  e.style.left=(2+Math.random()*94)+'%';
+  e.style.animationDuration=(18+Math.random()*22)+'s';
+  e.style.animationDelay=(Math.random()*25)+'s';
+  e.style.fontSize=(22+Math.random()*38)+'px';
   document.getElementById('floats').appendChild(e);
 }
 </script>
+
 <div class="hero">
 <pre>  ╱|、
  (˚ˎ 。7
@@ -61,6 +66,7 @@ for(let i=0;i<35;i++){
   じしˍ,)ノ</pre>
 <h1>MIAU SURVEILLANCE</h1>
 <p class="tag">Global Surveillance Toolkit · Built by Cats · Made in Germany</p>
+<p class="joke">"Why do cats make great spies? They already have 9 lives of field experience."</p>
 <a href="/surveillance" class="cta">▶ Launch Live Dashboard</a>
 <div class="links">
   <a href="https://github.com/jz1656-izback/miau-surveillance-free">GitHub</a>
@@ -70,60 +76,66 @@ for(let i=0;i<35;i++){
 </div>
 
 <div class="stats">
-  <div class="stat"><div class="n">51</div><div class="l">TypeScript Modules</div></div>
-  <div class="stat"><div class="n">11</div><div class="l">Live Data Layers</div></div>
-  <div class="stat"><div class="n">128</div><div class="l">Global Cameras</div></div>
-  <div class="stat"><div class="n">7,029+</div><div class="l">Traffic Cams</div></div>
-  <div class="stat"><div class="n">36</div><div class="l">Automated Tests</div></div>
+  <div class="stat"><div class="n">51</div><div class="l">Modules</div></div>
+  <div class="stat"><div class="n">11</div><div class="l">Live Layers</div></div>
+  <div class="stat"><div class="n">128</div><div class="l">Cameras</div></div>
+  <div class="stat"><div class="n">7k+</div><div class="l">Traffic Cams</div></div>
+  <div class="stat"><div class="n">36</div><div class="l">Tests</div></div>
 </div>
 
-<div class="section"><h2>📡 Live Surveillance Layers</h2></div>
-<div class="grid">
-  <div class="card"><h3>📷 CCTV Feeds</h3><div class="num">128</div><p>6 continents · 50+ countries · YouTube live embeds</p></div>
-  <div class="card"><h3>✈ Flight Tracking</h3><div class="num">80+ Live</div><p>ADS-B aircraft · Military detection · 60-min trails</p></div>
-  <div class="card"><h3>🔥 Wildfire Monitor</h3><div class="num">500+</div><p>NASA FIRMS · 24h hotspots · Confidence-graded</p></div>
-  <div class="card"><h3>🌍 Earthquakes</h3><div class="num">100+ Daily</div><p>USGS live feed · Magnitude-colored markers</p></div>
-  <div class="card"><h3>🛰 Satellite Tracking</h3><div class="num">3 Active</div><p>ISS · Hubble · Tiangong · Real-time orbits</p></div>
-  <div class="card"><h3>🚦 Traffic Cameras</h3><div class="num">7,029+</div><p>OTC Map + DOT scraper · M3U8/HLS streams</p></div>
-  <div class="card"><h3>🌊 Jet Streams</h3><div class="num">Global</div><p>Animated wind particles · NOAA GFS data</p></div>
-  <div class="card"><h3>⚡ Lightning</h3><div class="num">200+ Strikes</div><p>Blitzortung · Real-time global detection</p></div>
-  <div class="card"><h3>⚠ Disasters</h3><div class="num">20+ Active</div><p>NASA EONET · Live event tracking</p></div>
-  <div class="card"><h3>⚔ Conflicts</h3><div class="num">50 Zones</div><p>Global conflict monitoring · Intensity graded</p></div>
-  <div class="card"><h3>★ Military</h3><div class="num">48 Installations</div><p>Nuclear + military bases worldwide</p></div>
-  <div class="card"><h3>🚢 Ships</h3><div class="num">12 Vessels</div><p>Cargo · Tanker · Passenger · AIS-ready</p></div>
+<div class="section">
+  <h2>📡 Live Surveillance Layers</h2>
+  <p class="joke">"How many cats does it take to monitor the world? Just one — with the right software."</p>
+  <div class="grid">
+    <div class="card"><h3>📷 CCTV Feeds</h3><div class="num">128</div><p>6 continents · 50+ countries · YouTube live</p></div>
+    <div class="card"><h3>✈️ Flights</h3><div class="num">80+ Live</div><p>ADS-B · Military detection · 60-min trails</p></div>
+    <div class="card"><h3>🔥 Wildfires</h3><div class="num">500+</div><p>NASA FIRMS · 24h hotspots</p></div>
+    <div class="card"><h3>🌍 Quakes</h3><div class="num">100+</div><p>USGS · Magnitude-colored</p></div>
+    <div class="card"><h3>🛰 Satellites</h3><div class="num">3 Active</div><p>ISS · Hubble · Tiangong</p></div>
+    <div class="card"><h3>🚦 Traffic</h3><div class="num">7,029+</div><p>OTC Map + DOT · M3U8/HLS</p></div>
+    <div class="card"><h3>🌊 Jet Streams</h3><div class="num">Global</div><p>Animated wind · NOAA GFS</p></div>
+    <div class="card"><h3>⚡ Lightning</h3><div class="num">200+</div><p>Blitzortung · Real-time</p></div>
+    <div class="card"><h3>⚠ Disasters</h3><div class="num">20+ Active</div><p>NASA EONET</p></div>
+    <div class="card"><h3>⚔ Conflicts</h3><div class="num">50 Zones</div><p>Global monitoring</p></div>
+    <div class="card"><h3>★ Military</h3><div class="num">48 Bases</div><p>Nuclear + installations</p></div>
+    <div class="card"><h3>🚢 Ships</h3><div class="num">12 Vessels</div><p>Cargo · Tanker · Passenger</p></div>
+  </div>
 </div>
 
-<div class="section"><h2>🛠 Capabilities</h2></div>
-<div class="caps">
-  <div class="cap"><b>⌨️ CLI Terminal</b> — cat, help, status, go tokyo</div>
-  <div class="cap"><b>🌪 Windy Overlays</b> — wind, temp, precip, clouds, pressure</div>
-  <div class="cap"><b>🖥 Grid View</b> — 4/9/16 cameras simultaneously</div>
-  <div class="cap"><b>🔗 Correlation</b> — click map for related events</div>
-  <div class="cap"><b>🕰 Timeline</b> — 24h event scrubber + playback</div>
-  <div class="cap"><b>🚨 Alert System</b> — push notifications + rules</div>
-  <div class="cap"><b>🎤 Voice Control</b> — "Show Tokyo", "Refresh"</div>
-  <div class="cap"><b>🔍 City Search</b> — any city worldwide</div>
-  <div class="cap"><b>⭐ Favorites</b> — bookmark cameras</div>
-  <div class="cap"><b>📺 3 Themes</b> — CRT / Dark / Matrix</div>
-  <div class="cap"><b>😺 Cat Mascot</b> — surveillance facts on click</div>
-  <div class="cap"><b>📥 Import/Export</b> — custom cameras as JSON</div>
-  <div class="cap"><b>🗺 4 Tile Layers</b> — Dark / Satellite / Terrain / Streets</div>
-  <div class="cap"><b>🛰 Pass Predictions</b> — ISS + Hubble overflights</div>
-  <div class="cap"><b>🐱 Easter Eggs</b> — Konami code, Miau storm</div>
-  <div class="cap"><b>🛡 Error Recovery</b> — crash overlay + log panel</div>
+<div class="section">
+  <h2>🛠 Capabilities</h2>
+  <p class="joke">"This dashboard has more features than a cat has whiskers. That's 24. We checked."</p>
+  <div class="caps">
+    <div class="cap"><b>⌨️ CLI Terminal</b> — cat, help, status, go tokyo</div>
+    <div class="cap"><b>🌪 Windy Overlays</b> — wind, temp, precip, clouds, pressure</div>
+    <div class="cap"><b>🖥 Grid View</b> — 4/9/16 cameras simultaneously</div>
+    <div class="cap"><b>🔗 Correlation</b> — click map for related events</div>
+    <div class="cap"><b>🕰 Timeline</b> — 24h event scrubber + playback</div>
+    <div class="cap"><b>🚨 Alert System</b> — push notifications + rules</div>
+    <div class="cap"><b>🎤 Voice Control</b> — "Show Tokyo"</div>
+    <div class="cap"><b>🔍 City Search</b> — any city worldwide</div>
+    <div class="cap"><b>⭐ Favorites</b> — bookmark cameras</div>
+    <div class="cap"><b>📺 3 Themes</b> — CRT / Dark / Matrix</div>
+    <div class="cap"><b>📥 Import/Export</b> — custom cams as JSON</div>
+    <div class="cap"><b>🛰 Pass Predictions</b> — ISS + Hubble overflights</div>
+  </div>
 </div>
 
-<div class="section"><h2>🧪 Built for Production</h2></div>
-<div class="grid">
-  <div class="card"><h3>TypeScript Strict</h3><div class="num">51</div><p>Zero type errors · Full type safety</p></div>
-  <div class="card"><h3>Automated Tests</h3><div class="num">36</div><p>6 test files · Logger, DOM, Data, Tracking, History, Correlation, Alerts</p></div>
-  <div class="card"><h3>Docker Ready</h3><div class="num">1 Command</div><p>docker compose up -d · Multi-stage build</p></div>
-  <div class="card"><h3>Code Split</h3><div class="num">126 KB</div><p>Main bundle · 83% smaller than v4</p></div>
+<div class="section">
+  <h2>🧪 Built for Production</h2>
+  <p class="joke">"Cats don't do bugs. That's why we have 36 tests. And zero mice."</p>
+  <div class="grid">
+    <div class="card"><h3>TypeScript</h3><div class="num">51</div><p>Zero type errors · Strict mode</p></div>
+    <div class="card"><h3>Tests</h3><div class="num">36</div><p>6 test files · Automated CI</p></div>
+    <div class="card"><h3>Docker</h3><div class="num">1 Command</div><p>docker compose up -d</p></div>
+    <div class="card"><h3>Bundle</h3><div class="num">126 KB</div><p>Code split · 83% smaller</p></div>
+  </div>
 </div>
 
 <div class="footer">
   <p>🐱 MIAU SURVEILLANCE v5.0 — Built by cats. For cats. In Germany.</p>
-  <p><a href="https://github.com/jz1656-izback/miau-surveillance-free">github.com/jz1656-izback/miau-surveillance-free</a></p>
+  <p>"In Germany, even the cats have DIN certification."</p>
+  <p style="margin-top:8px"><a href="https://github.com/jz1656-izback/miau-surveillance-free">github.com/jz1656-izback/miau-surveillance-free</a></p>
 </div>
 </body>
 </html>
