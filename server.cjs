@@ -127,7 +127,7 @@ const server = http.createServer((req, res) => {
 
   // ═══ Homepage (root) ═══
   if (url === '/' || url === '/index.html') {
-    serveFile(res, path.join(DIST, 'index.html'), 'html');
+    serveFile(res, path.join(DIST, 'home.html'), 'html');
     return;
   }
 

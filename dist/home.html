@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Miau Surveillance — Global surveillance toolkit. 128 cameras, 11 live layers, 7,000+ traffic cams. Built by cats in Germany.">
+<title>Miau Surveillance — Global Surveillance Toolkit</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0f14;color:#d4dce4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.6;overflow-x:hidden}
+::selection{background:rgba(0,200,100,0.2)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,15,20,0.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.04);padding:14px 32px;display:flex;align-items:center;justify-content:space-between}
+nav .brand{font-size:16px;font-weight:700;color:#00c864;text-decoration:none}
+nav .links{display:flex;gap:24px}
+nav .links a{color:#8899aa;text-decoration:none;font-size:13px;transition:color 0.2s}
+nav .links a:hover{color:#d4dce4}
+
+.hero{padding:160px 24px 100px;text-align:center;max-width:800px;margin:0 auto}
+.hero .logo{color:#00c864;font-size:36px;line-height:1.08;margin-bottom:28px;display:inline-block;text-align:left;font-family:'Courier New',monospace}
+.hero h1{font-size:52px;font-weight:800;background:linear-gradient(135deg,#00c864,#00aaff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 16px;letter-spacing:-1px}
+.hero p{font-size:17px;color:#7a8a9a;max-width:560px;margin:0 auto 36px;line-height:1.7}
+.hero .cta{display:inline-flex;gap:12px}
+.btn{display:inline-block;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;transition:all 0.2s}
+.btn-primary{background:#00c864;color:#0a0f14}
+.btn-primary:hover{background:#00e070;box-shadow:0 0 24px rgba(0,200,100,0.2);transform:translateY(-1px)}
+.btn-outline{border:1px solid #334455;color:#8899aa}
+.btn-outline:hover{border-color:#556677;color:#aabbcc}
+
+section{padding:80px 24px}
+.section-inner{max-width:1000px;margin:0 auto}
+.section-label{font-size:11px;font-weight:700;color:#00c864;text-transform:uppercase;letter-spacing:3px;margin-bottom:8px}
+.section-title{font-size:32px;font-weight:800;color:#d4dce4;margin-bottom:12px}
+.section-desc{font-size:15px;color:#6a7a8a;max-width:600px;margin-bottom:48px;line-height:1.7}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center}
+@media(max-width:700px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+.stat-card .num{font-size:40px;font-weight:800;color:#d4dce4}
+.stat-card .label{font-size:12px;color:#5a6a7a;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:800px){.features-grid{grid-template-columns:1fr}}
+.feat-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:10px;padding:28px;transition:all 0.2s}
+.feat-card:hover{border-color:rgba(0,200,100,0.2);background:rgba(0,200,100,0.02)}
+.feat-card .icon{font-size:28px;margin-bottom:12px}
+.feat-card h3{font-size:16px;font-weight:700;color:#d4dce4;margin-bottom:6px}
+.feat-card p{font-size:13px;color:#6a7a8a;line-height:1.6}
+
+.papers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:800px){.papers-grid{grid-template-columns:1fr}}
+.paper-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:10px;padding:28px;transition:all 0.2s;text-decoration:none;color:inherit;display:block}
+.paper-card:hover{border-color:rgba(0,200,100,0.2);background:rgba(0,200,100,0.02)}
+.paper-card .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;margin-bottom:12px}
+.paper-card .tag-green{background:rgba(0,200,100,0.1);color:#00c864}
+.paper-card .tag-blue{background:rgba(0,150,255,0.1);color:#0096ff}
+.paper-card .tag-amber{background:rgba(255,150,0,0.1);color:#ff9600}
+.paper-card h3{font-size:16px;font-weight:700;color:#d4dce4;margin-bottom:6px}
+.paper-card p{font-size:12px;color:#6a7a8a;line-height:1.6}
+.paper-card .meta{font-size:10px;color:#4a5a6a;margin-top:12px}
+
+.cta-section{text-align:center;padding:100px 24px;background:linear-gradient(180deg,transparent,rgba(0,200,100,0.03),transparent)}
+.cta-section h2{font-size:36px;font-weight:800;color:#d4dce4;margin-bottom:12px}
+.cta-section p{font-size:15px;color:#6a7a8a;margin-bottom:32px}
+
+footer{padding:40px 24px;text-align:center;border-top:1px solid rgba(255,255,255,0.04)}
+footer p{font-size:12px;color:#4a5a6a}
+footer a{color:#5a6a7a;text-decoration:none}
+footer a:hover{color:#8899aa}
+
+@media(max-width:600px){
+  .hero h1{font-size:36px}
+  .section-title{font-size:24px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="brand">🐱 Miau Surveillance</a>
+  <div class="links">
+    <a href="/surveillance">Dashboard</a>
+<a href="#features">Features</a>
+    <a href="#papers">Papers</a>
+    <a href="https://github.com/jz1656-izback/miau-surveillance-free">GitHub</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <pre class="logo">  ╱|、
+ (˚ˎ 。7
+  |、˜〵
+  じしˍ,)ノ</pre>
+  <h1>Global Surveillance<br>Made Simple</h1>
+  <p>Open-source toolkit for monitoring the world in real time. Conflicts, flights, weather, satellites — all in one dashboard. Built by cats. Made in Germany.</p>
+  <div class="cta">
+    <a href="/surveillance" class="btn btn-primary">Launch Dashboard</a>
+    <a href="#papers" class="btn btn-outline">Read the Papers</a>
+  </div>
+</div>
+
+<section><div class="section-inner">
+  <div class="stats-grid">
+    <div class="stat-card"><div class="num">128</div><div class="label">Live Cameras</div></div>
+    <div class="stat-card"><div class="num">11</div><div class="label">Data Layers</div></div>
+    <div class="stat-card"><div class="num">7k+</div><div class="label">Traffic Cams</div></div>
+    <div class="stat-card"><div class="num">36</div><div class="label">Automated Tests</div></div>
+  </div>
+</div></section>
+
+<section id="features"><div class="section-inner">
+  <div class="section-label">Features</div>
+  <div class="section-title">Everything you need to monitor the world</div>
+  <div class="section-desc">11 live data layers, AI-powered correlation, and a terminal interface for power users.</div>
+  <div class="features-grid">
+    <div class="feat-card"><div class="icon">📷</div><h3>Global CCTV</h3><p>128 cameras across 6 continents. YouTube live embeds with instant playback. Add your own feeds.</p></div>
+    <div class="feat-card"><div class="icon">✈️</div><h3>Flight Tracking</h3><p>Real-time ADS-B with military detection. 60-minute trails for every aircraft.</p></div>
+    <div class="feat-card"><div class="icon">🌊</div><h3>Jet Streams</h3><p>Animated wind particles on the map. Global wind patterns from NOAA GFS data.</p></div>
+    <div class="feat-card"><div class="icon">🔥</div><h3>Disaster Monitor</h3><p>NASA wildfire hotspots. USGS earthquakes. Lightning detection. All live.</p></div>
+    <div class="feat-card"><div class="icon">🛰</div><h3>Satellite Tracking</h3><p>ISS, Hubble, Tiangong with real-time orbital paths and pass predictions.</p></div>
+    <div class="feat-card"><div class="icon">⌨️</div><h3>Terminal CLI</h3><p>Power-user interface with commands. Type 'help', 'go tokyo', 'cat'.</p></div>
+  </div>
+</div></section>
+
+<section id="papers"><div class="section-inner">
+  <div class="section-label">Miau Papers</div>
+  <div class="section-title">Research & Whitepapers</div>
+  <div class="section-desc">Technical deep-dives into the architecture, security model, and data pipelines of Miau Surveillance.</div>
+  <div class="papers-grid">
+    <a href="#" class="paper-card">
+      <span class="tag tag-green">Architecture</span>
+      <h3>Miau Surveillance: A Modular Real-Time Monitoring Platform</h3>
+      <p>How 51 TypeScript modules, Leaflet.js, and 11 live data APIs combine into a zero-dependency production dashboard serving 128 cameras and 7,000+ traffic feeds.</p>
+      <div class="meta">v5.0 · August 2026 · 8 min read</div>
+    </a>
+    <a href="#" class="paper-card">
+      <span class="tag tag-blue">Data Engineering</span>
+      <h3>Real-Time Data Pipeline Design for Global Surveillance</h3>
+      <p>OpenSky ADS-B, USGS earthquake feeds, NASA FIRMS, and Open-Meteo weather — how we ingest, normalize, and visualize 11 heterogeneous data streams with sub-second latency.</p>
+      <div class="meta">v5.0 · August 2026 · 12 min read</div>
+    </a>
+    <a href="#" class="paper-card">
+      <span class="tag tag-amber">Security</span>
+      <h3>Browser-Based Surveillance: Security Model & Threat Analysis</h3>
+      <p>Zero backend. No API keys. All data flows directly from public APIs to the browser. How CSP, sandboxing, and client-side validation protect the surveillance toolkit.</p>
+      <div class="meta">v5.0 · August 2026 · 6 min read</div>
+    </a>
+    <a href="#" class="paper-card">
+      <span class="tag tag-green">Performance</span>
+      <h3>Rendering 700,000 Data Points: The Miau Visualization Engine</h3>
+      <p>From Leaflet marker clustering to canvas-based wind particles — how we achieve 60fps with 7,000+ traffic cameras, animated jet streams, and real-time satellite orbits.</p>
+      <div class="meta">v5.0 · August 2026 · 10 min read</div>
+    </a>
+    <a href="#" class="paper-card">
+      <span class="tag tag-blue">Testing</span>
+      <h3>36 Tests, Zero Regressions: The Miau Quality Framework</h3>
+      <p>Our testing philosophy: DOM tests, data validation, orbit calculation verification, correlation engine checks — and why every feature ships with automated tests.</p>
+      <div class="meta">v5.0 · August 2026 · 5 min read</div>
+    </a>
+    <a href="#" class="paper-card">
+      <span class="tag tag-amber">Deployment</span>
+      <h3>From Git Clone to Production: The Miau Deployment Pipeline</h3>
+      <p>Docker Compose, Nginx reverse proxy, Let's Encrypt SSL, and PM2 process management — deploy a global surveillance platform in under 60 seconds.</p>
+      <div class="meta">v5.0 · August 2026 · 7 min read</div>
+    </a>
+  </div>
+</div></section>
+
+<div class="cta-section">
+  <h2>Ready to monitor the world?</h2>
+  <p>Open source. No API keys. No accounts. One command to deploy.</p>
+  <a href="/surveillance" class="btn btn-primary">Launch Dashboard →</a>
+</div>
+
+<footer>
+  <p>🐱 Miau Surveillance v5.0 · Built by cats. For cats. In Germany.</p>
+  <p style="margin-top:8px"><a href="https://github.com/jz1656-izback/miau-surveillance-free">GitHub</a> · <a href="/surveillance">Dashboard</a> · <a href="/presentation">Features</a></p>
+</footer>
+</body>
+</html>
