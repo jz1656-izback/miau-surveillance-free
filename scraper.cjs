@@ -90,6 +90,18 @@ async function fetchDOT() {
 }
 
 // Deduplicate by lat/lon (closest 100m)
+// Filter out cameras with invalid data and empty/broken URLs
+function filterValid(cams) {
+  return cams.filter(c => {
+    const lat = parseFloat(c.latitude);
+    const lon = parseFloat(c.longitude);
+    const url = (c.url || '').trim();
+    if (!lat || !lon || lat === 0) return false;
+    if (!url || url.length < 5) return false;
+    return true;
+  });
+}
+
 function dedupe(cams) {
   const seen = new Set();
   return cams.filter(c => {
@@ -116,7 +128,7 @@ async function scrape() {
   ]);
 
   // Merge: OTC > DOT > existing
-  const newCams = [...otcMaster, ...otcV1, ...dotCams];
+  const newCams = filterValid([...otcMaster, ...otcV1, ...dotCams]);
   const merged = dedupe([...newCams, ...cache]);
   
   // Save

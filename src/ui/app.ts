@@ -774,17 +774,16 @@ export async function initApp() {
     if (!tLayer) return;
     try {
       const res = await fetch('/cameras-cache.json');
-      const cams = await res.json();
+      const cams = (await res.json()).filter((c: any) => c.url && c.url.length > 5 && c.latitude && c.longitude);
       if (cams.length > 0) {
-        cams.forEach((c: any) => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
-        console.log(`Traffic cams: ${cams.length} from cache`);
+        cams.forEach((c: any) => createTrafficMarker(+c.latitude, +c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
         return;
       }
     } catch {}
     // Fallback: fetch live
     try {
       const [otc, dot] = await Promise.all([fetchTrafficCams(), scrapeDOTCameras()]);
-      [...otc, ...dot].forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
+      [...otc, ...dot].filter(c => c.url && c.url.length > 5).forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
     } catch {}
   })();
 
