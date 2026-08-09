@@ -456,6 +456,18 @@ function bindSidebarClicks() {
 
 // ── Layer toggles ──
 
+  let trafficLoaded = false;
+  async function loadTrafficCameras() {
+    if (trafficLoaded) return;
+    trafficLoaded = true;
+    try {
+      const tLayer = layers.get('traffic')!;
+      const [otcCams, dotCams] = await Promise.all([fetchTrafficCams(), scrapeDOTCameras()]);
+      const allCams = [...otcCams, ...dotCams];
+      logger.info('APP', `Traffic cams: ${otcCams.length} (OTC) + ${dotCams.length} (DOT) = ${allCams.length} total`);
+      allCams.forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
+    } catch (e) { logger.warn('APP', 'Traffic cam load failed', e); }
+  }
 function bindLayerToggles() {
   document.getElementById('layers')!.addEventListener('click', e => {
     const btn = (e.target as HTMLElement).closest('button') as HTMLElement | null;
@@ -754,35 +766,7 @@ export async function initApp() {
   window.addEventListener('miau-focus-layer', ((e: CustomEvent) => showOnlyLayer(e.detail)) as EventListener);
 
   // Load traffic cameras only when layer is activated (lazy, 7000+ cams)
-  let trafficLoaded = false;
-  async function loadTrafficCameras() {
-    if (trafficLoaded) return;
-    trafficLoaded = true;
-    try {
-      const tLayer = layers.get('traffic')!;
-      const [otcCams, dotCams] = await Promise.all([fetchTrafficCams(), scrapeDOTCameras()]);
-      const allCams = [...otcCams, ...dotCams];
-      logger.info('APP', `Traffic cams: ${otcCams.length} (OTC) + ${dotCams.length} (DOT) = ${allCams.length} total`);
-      allCams.forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
-    } catch (e) { logger.warn('APP', 'Traffic cam load failed', e); }
-  }
 
-  // Load traffic cameras only when layer is activated (lazy, 7000+ cams)
-  let trafficLoaded = false;
-  async function loadTrafficCameras() {
-    if (trafficLoaded) return;
-    trafficLoaded = true;
-    try {
-      const tLayer = layers.get('traffic')!;
-      const [otcCams, dotCams] = await Promise.all([fetchTrafficCams(), scrapeDOTCameras()]);
-      const allCams = [...otcCams, ...dotCams];
-      logger.info('APP', `Traffic cams: ${otcCams.length} (OTC) + ${dotCams.length} (DOT) = ${allCams.length} total`);
-      allCams.forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
-    } catch (e) { logger.warn('APP', 'Traffic cam load failed', e); }
-  }
-
-
-  // Map click → show related events within 200km
   getMap().on('click', (e: any) => {
     const { lat, lng } = e.latlng;
     const group = correlateEvent({ id: '', timestamp: Date.now(), type: 'quake', lat, lon: lng, label: 'Map click' }, 200);
