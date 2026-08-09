@@ -3,73 +3,111 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Miau Surveillance Free — Global surveillance toolkit built by cats, made in Germany. 128 cameras, 10 live data layers, jet streams, satellite tracking.">
-<title>🐱 MiauCorp — Surveillance Toolkit</title>
+<meta name="description" content="Miau Surveillance — Global surveillance toolkit. 128 cameras, 11 live data layers, 7,000+ traffic cams. Built by cats, made in Germany.">
+<title>🐱 Miau Surveillance — Global Surveillance Toolkit</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body { background:#0a1418; color:#aaccee; font-family:'Courier New',monospace; min-height:100vh; overflow-x:hidden; }
-body::after { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,rgba(0,255,100,0.06) 0px,transparent 1px,transparent 2px); pointer-events:none; z-index:9999; }
-.hero { text-align:center; padding:80px 20px 50px; }
-.hero h1 { font-size:52px; background:linear-gradient(90deg,#00c864,#00aaff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:8px; }
-.hero .tagline { font-size:16px; color:rgba(130,150,180,0.5); margin-bottom:12px; }
-.hero .sub { font-size:11px; color:rgba(130,150,180,0.3); margin-bottom:36px; }
-.hero .cta { display:inline-block; padding:16px 36px; background:rgba(0,200,100,0.15); border:1px solid #00c864; color:#00c864; text-decoration:none; font-size:16px; border-radius:6px; transition:all 0.2s; font-weight:700; }
-.hero .cta:hover { background:rgba(0,200,100,0.25); box-shadow:0 0 20px rgba(0,200,100,0.2); }
-.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; padding:20px 40px; max-width:1200px; margin:0 auto; }
-.card { background:rgba(5,12,16,0.8); border:1px solid rgba(0,200,100,0.1); border-radius:8px; padding:20px; transition:all 0.2s; }
-.card:hover { border-color:rgba(0,200,100,0.3); background:rgba(5,18,20,0.9); }
-.card h3 { color:#00c864; font-size:14px; margin-bottom:8px; }
-.card p { font-size:11px; color:rgba(130,150,180,0.5); line-height:1.6; }
-.card .stat { font-size:28px; font-weight:700; color:#aaccee; margin:4px 0; }
-.section { text-align:center; padding:40px 20px; }
-.section h2 { color:#00c864; font-size:24px; margin-bottom:20px; letter-spacing:2px; }
-.features { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:8px; max-width:1000px; margin:0 auto; padding:0 20px; }
-.feature { padding:8px 14px; font-size:11px; color:rgba(130,150,180,0.4); border:1px solid rgba(0,200,100,0.05); border-radius:4px; }
-.feature b { color:#00c864; }
-.footer { text-align:center; padding:40px; color:rgba(130,150,180,0.15); font-size:10px; border-top:1px solid rgba(0,200,100,0.04); }
-.footer a { color:rgba(130,150,180,0.3); }
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a1418;color:#aaccee;font-family:'Courier New',monospace;line-height:1.6}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,rgba(0,255,100,0.04) 0px,transparent 1px,transparent 2px);pointer-events:none;z-index:9999}
+.hero{text-align:center;padding:60px 20px 40px;background:linear-gradient(180deg,rgba(0,200,100,0.05),transparent)}
+.hero pre{color:#00c864;font-size:13px;line-height:1.3;margin-bottom:16px;display:inline-block;text-align:left}
+.hero h1{font-size:48px;background:linear-gradient(90deg,#00c864,#00aaff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:8px 0}
+.hero .tag{font-size:14px;color:rgba(130,150,180,0.4);margin-bottom:24px}
+.hero .cta{display:inline-block;padding:14px 36px;background:rgba(0,200,100,0.12);border:1px solid #00c864;color:#00c864;text-decoration:none;font-size:15px;border-radius:5px;font-weight:700;transition:all 0.2s}
+.hero .cta:hover{background:rgba(0,200,100,0.22);box-shadow:0 0 24px rgba(0,200,100,0.15)}
+.hero .links{margin-top:16px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.hero .links a{color:rgba(130,150,180,0.3);font-size:10px;text-decoration:none}
+.hero .links a:hover{color:rgba(130,150,180,0.6)}
+.stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap;padding:16px 20px;max-width:900px;margin:0 auto}
+.stat{text-align:center}
+.stat .n{font-size:32px;font-weight:700;color:#aaccee}
+.stat .l{font-size:9px;color:rgba(130,150,180,0.3);text-transform:uppercase;letter-spacing:1px}
+.section{padding:40px 20px;max-width:1000px;margin:0 auto}
+.section h2{color:#00c864;font-size:20px;text-align:center;margin-bottom:24px;letter-spacing:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.card{background:rgba(5,12,16,0.8);border:1px solid rgba(0,200,100,0.08);border-radius:6px;padding:16px;transition:all 0.15s}
+.card:hover{border-color:rgba(0,200,100,0.2)}
+.card h3{color:#00c864;font-size:13px;margin-bottom:4px}
+.card .num{font-size:22px;font-weight:700;color:#aaccee;margin:4px 0}
+.card p{font-size:10px;color:rgba(130,150,180,0.4)}
+.caps{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.cap{padding:6px 12px;font-size:10px;color:rgba(130,150,180,0.35);border:1px solid rgba(0,200,100,0.06);border-radius:4px}
+.cap b{color:#00c864}
+.footer{text-align:center;padding:40px;color:rgba(130,150,180,0.12);font-size:9px;border-top:1px solid rgba(0,200,100,0.03)}
+.footer a{color:rgba(130,150,180,0.2)}
 </style>
 </head>
 <body>
 <div class="hero">
-  <h1>🐱 MIAUCORP</h1>
-  <p class="tagline">Global Surveillance Toolkit · Built by Cats · Made in Germany</p>
-  <p class="sub">128 cameras · 11 live data layers · 7,000+ traffic cams · Jet streams · Satellite tracking</p>
-  <a href="/surveillance" class="cta">▶ Launch Surveillance Dashboard</a>
+<pre>  ╱|、
+ (˚ˎ 。7
+  |、˜〵
+  じしˍ,)ノ</pre>
+<h1>MIAU SURVEILLANCE</h1>
+<p class="tag">Global Surveillance Toolkit · Built by Cats · Made in Germany</p>
+<a href="/surveillance" class="cta">▶ Launch Live Dashboard</a>
+<div class="links">
+  <a href="https://github.com/jz1656-izback/miau-surveillance-free">GitHub</a>
+  <a href="/surveillance">Dashboard</a>
+  <a href="/health">API Status</a>
+</div>
 </div>
 
-<div class="section"><h2>📡 11 Live Data Layers</h2></div>
+<div class="stats">
+  <div class="stat"><div class="n">51</div><div class="l">TypeScript Modules</div></div>
+  <div class="stat"><div class="n">11</div><div class="l">Live Data Layers</div></div>
+  <div class="stat"><div class="n">128</div><div class="l">Global Cameras</div></div>
+  <div class="stat"><div class="n">7,029+</div><div class="l">Traffic Cams</div></div>
+  <div class="stat"><div class="n">36</div><div class="l">Automated Tests</div></div>
+</div>
+
+<div class="section"><h2>📡 Live Surveillance Layers</h2></div>
 <div class="grid">
-  <div class="card"><h3>📷 CCTV Feeds</h3><div class="stat">128</div><p>6 continents, 50+ countries. YouTube live embeds. One click to watch.</p></div>
-  <div class="card"><h3>✈ Flight Tracking</h3><div class="stat">80+</div><p>Live ADS-B aircraft. Military detection. 60-minute flight trails.</p></div>
-  <div class="card"><h3>🛰 Satellites</h3><div class="stat">3</div><p>ISS, Hubble, Tiangong. Real-time orbits. 90-minute path prediction.</p></div>
-  <div class="card"><h3>🔥 Wildfires</h3><div class="stat">500+</div><p>NASA FIRMS. 24h global hotspots. Confidence-graded.</p></div>
-  <div class="card"><h3>🌍 Earthquakes</h3><div class="stat">100+</div><p>USGS live feed. Magnitude-colored markers.</p></div>
-  <div class="card"><h3>🚦 Traffic</h3><div class="stat">7,029+</div><p>OTC + DOT cameras. M3U8/HLS video streams. Lazy-loaded.</p></div>
-  <div class="card"><h3>⚡ Lightning</h3><div class="stat">200+</div><p>Blitzortung live strikes. Real-time detection.</p></div>
-  <div class="card"><h3>🚢 Ships</h3><div class="stat">12</div><p>Demo fleet. Cargo, tanker, passenger. AIS-ready.</p></div>
-  <div class="card"><h3>🌊 Jet Streams</h3><div class="stat">Live</div><p>Animated wind particles. Global wind patterns on map.</p></div>
+  <div class="card"><h3>📷 CCTV Feeds</h3><div class="num">128</div><p>6 continents · 50+ countries · YouTube live embeds</p></div>
+  <div class="card"><h3>✈ Flight Tracking</h3><div class="num">80+ Live</div><p>ADS-B aircraft · Military detection · 60-min trails</p></div>
+  <div class="card"><h3>🔥 Wildfire Monitor</h3><div class="num">500+</div><p>NASA FIRMS · 24h hotspots · Confidence-graded</p></div>
+  <div class="card"><h3>🌍 Earthquakes</h3><div class="num">100+ Daily</div><p>USGS live feed · Magnitude-colored markers</p></div>
+  <div class="card"><h3>🛰 Satellite Tracking</h3><div class="num">3 Active</div><p>ISS · Hubble · Tiangong · Real-time orbits</p></div>
+  <div class="card"><h3>🚦 Traffic Cameras</h3><div class="num">7,029+</div><p>OTC Map + DOT scraper · M3U8/HLS streams</p></div>
+  <div class="card"><h3>🌊 Jet Streams</h3><div class="num">Global</div><p>Animated wind particles · NOAA GFS data</p></div>
+  <div class="card"><h3>⚡ Lightning</h3><div class="num">200+ Strikes</div><p>Blitzortung · Real-time global detection</p></div>
+  <div class="card"><h3>⚠ Disasters</h3><div class="num">20+ Active</div><p>NASA EONET · Live event tracking</p></div>
+  <div class="card"><h3>⚔ Conflicts</h3><div class="num">50 Zones</div><p>Global conflict monitoring · Intensity graded</p></div>
+  <div class="card"><h3>★ Military</h3><div class="num">48 Installations</div><p>Nuclear + military bases worldwide</p></div>
+  <div class="card"><h3>🚢 Ships</h3><div class="num">12 Vessels</div><p>Cargo · Tanker · Passenger · AIS-ready</p></div>
 </div>
 
-<div class="section"><h2>🎮 Capabilities</h2></div>
-<div class="features">
-  <div class="feature"><b>🌊 Jet Streams</b> — Animated wind particles</div>
-  <div class="feature"><b>🖥 Grid View</b> — 4/9/16 cameras at once</div>
-  <div class="feature"><b>⌨️ Terminal</b> — CLI with commands</div>
-  <div class="feature"><b>🎤 Voice</b> — Speak to navigate</div>
-  <div class="feature"><b>🕰 Timeline</b> — 24h event scrubber</div>
-  <div class="feature"><b>🔗 Correlation</b> — Click for related events</div>
-  <div class="feature"><b>🚨 Alerts</b> — Push notifications</div>
-  <div class="feature"><b>⭐ Favorites</b> — Bookmark cameras</div>
-  <div class="feature"><b>🔍 City Search</b> — Any city worldwide</div>
-  <div class="feature"><b>📺 3 Themes</b> — CRT/Dark/Matrix</div>
-  <div class="feature"><b>😺 Cat Mascot</b> — Facts on click</div>
-  <div class="feature"><b>🧪 36 Tests</b> — Automated suite</div>
+<div class="section"><h2>🛠 Capabilities</h2></div>
+<div class="caps">
+  <div class="cap"><b>⌨️ CLI Terminal</b> — cat, help, status, go tokyo</div>
+  <div class="cap"><b>🌪 Windy Overlays</b> — wind, temp, precip, clouds, pressure</div>
+  <div class="cap"><b>🖥 Grid View</b> — 4/9/16 cameras simultaneously</div>
+  <div class="cap"><b>🔗 Correlation</b> — click map for related events</div>
+  <div class="cap"><b>🕰 Timeline</b> — 24h event scrubber + playback</div>
+  <div class="cap"><b>🚨 Alert System</b> — push notifications + rules</div>
+  <div class="cap"><b>🎤 Voice Control</b> — "Show Tokyo", "Refresh"</div>
+  <div class="cap"><b>🔍 City Search</b> — any city worldwide</div>
+  <div class="cap"><b>⭐ Favorites</b> — bookmark cameras</div>
+  <div class="cap"><b>📺 3 Themes</b> — CRT / Dark / Matrix</div>
+  <div class="cap"><b>😺 Cat Mascot</b> — surveillance facts on click</div>
+  <div class="cap"><b>📥 Import/Export</b> — custom cameras as JSON</div>
+  <div class="cap"><b>🗺 4 Tile Layers</b> — Dark / Satellite / Terrain / Streets</div>
+  <div class="cap"><b>🛰 Pass Predictions</b> — ISS + Hubble overflights</div>
+  <div class="cap"><b>🐱 Easter Eggs</b> — Konami code, Miau storm</div>
+  <div class="cap"><b>🛡 Error Recovery</b> — crash overlay + log panel</div>
+</div>
+
+<div class="section"><h2>🧪 Built for Production</h2></div>
+<div class="grid">
+  <div class="card"><h3>TypeScript Strict</h3><div class="num">51</div><p>Zero type errors · Full type safety</p></div>
+  <div class="card"><h3>Automated Tests</h3><div class="num">36</div><p>6 test files · Logger, DOM, Data, Tracking, History, Correlation, Alerts</p></div>
+  <div class="card"><h3>Docker Ready</h3><div class="num">1 Command</div><p>docker compose up -d · Multi-stage build</p></div>
+  <div class="card"><h3>Code Split</h3><div class="num">126 KB</div><p>Main bundle · 83% smaller than v4</p></div>
 </div>
 
 <div class="footer">
-  <p>🐱 MIAUCORP.DE — Surveillance Toolkit v4.0</p>
-  <p style="margin-top:4px"><a href="https://github.com/jz1656-izback/miau-surveillance-free">GitHub</a></p>
+  <p>🐱 MIAU SURVEILLANCE v5.0 — Built by cats. For cats. In Germany.</p>
+  <p><a href="https://github.com/jz1656-izback/miau-surveillance-free">github.com/jz1656-izback/miau-surveillance-free</a></p>
 </div>
 </body>
 </html>
