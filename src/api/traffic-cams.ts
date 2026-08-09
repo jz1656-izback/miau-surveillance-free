@@ -16,8 +16,8 @@ const REPO_MASTER = 'https://raw.githubusercontent.com/AidanWelch/OpenTrafficCam
 export async function fetchTrafficCams(): Promise<TrafficCam[]> {
   const results: TrafficCam[] = [];
   
-  // Try v1 first (11MB, more cameras), fallback to master (1.5MB)
-  for (const url of [REPO_V1, REPO_MASTER]) {
+  // Try master first (faster, 1.5MB), fallback to v1 (11MB)
+  for (const url of [REPO_MASTER, REPO_V1]) {
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
       const data = await res.json();
