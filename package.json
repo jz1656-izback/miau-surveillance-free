@@ -1,7 +1,7 @@
 {
   "name": "miau-surveillance-free",
   "private": true,
-  "version": "3.0.0",
+  "version": "5.0.0",
   "type": "module",
   "description": "🐱 Miau Surveillance Free — Surveillance Toolkit built by cats, made in Germany",
   "scripts": {

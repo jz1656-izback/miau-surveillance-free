@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  miau:
+    build: .
+    container_name: miau-surveillance
+    ports:
+      - "5199:5199"
+    restart: unless-stopped
+    environment:
+      - PORT=5199
+      - HOST=0.0.0.0
+      - NODE_ENV=production
