@@ -21,10 +21,12 @@ cd miau-surveillance-free
 ## 🚀 Quick Start
 
 ```bash
+npm start        # → http://localhost:5199 (production, static files)
 npm run dev      # → http://localhost:5199 (development, hot reload)
-npm run preview  # → http://localhost:5199 (production, fast)
 npm run present  # → http://localhost:5200 (presentation page)
 ```
+
+Production uses `server.cjs` — a zero-dependency Node.js static server serving the built `dist/` folder. No Vite required at runtime.
 
 ## 📡 Live Data Layers
 
