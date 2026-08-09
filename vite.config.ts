@@ -11,6 +11,13 @@ export default defineConfig({
     modulePreload: false,
     rollupOptions: {
       external: [/^#wasm-/],
+      output: {
+        manualChunks: {
+          leaflet: ['leaflet', 'leaflet.markercluster'],
+          hls: ['hls.js'],
+          velocity: ['leaflet-velocity'],
+        },
+      },
     },
   },
   optimizeDeps: { exclude: ['satellite.js'] },

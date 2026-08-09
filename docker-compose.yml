@@ -1,12 +1,23 @@
-version: '3.8'
 services:
   miau:
     build: .
     container_name: miau-surveillance
+    restart: unless-stopped
     ports:
       - "5199:5199"
-    restart: unless-stopped
     environment:
       - PORT=5199
       - HOST=0.0.0.0
-      - NODE_ENV=production
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.miau.rule=Host(`miaucorp.de`) || Host(`www.miaucorp.de`)"
+      - "traefik.http.services.miau.loadbalancer.server.port=5199"
+      - "traefik.http.routers.miau.entrypoints=websecure"
+      - "traefik.http.routers.miau.tls.certresolver=letsencrypt"
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external: true
+    name: traefik

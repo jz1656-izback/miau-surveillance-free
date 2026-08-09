@@ -751,14 +751,25 @@ export async function initApp() {
   window.addEventListener('miau-show-all', () => showAllLayers());
   window.addEventListener('miau-focus-layer', ((e: CustomEvent) => showOnlyLayer(e.detail)) as EventListener);
 
-  // Load traffic cameras (one-time, 7000+ cameras)
-  try {
-    const tLayer = layers.get('traffic')!;
-    const [otcCams, dotCams] = await Promise.all([fetchTrafficCams(), scrapeDOTCameras()]);
-    const allCams = [...otcCams, ...dotCams];
-    logger.info('APP', `Traffic cams: ${otcCams.length} (OTC) + ${dotCams.length} (DOT) = ${allCams.length} total`);
-    allCams.forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
-  } catch (e) { logger.warn('APP', 'Traffic cam load failed', e); }
+  // Load traffic cameras only when layer is activated (lazy, 7000+ cams)
+  let trafficLoaded = false;
+  async function loadTrafficCameras() {
+    if (trafficLoaded) return;
+    trafficLoaded = true;
+    try {
+      const tLayer = layers.get('traffic')!;
+      const [otcCams, dotCams] = await Promise.all([fetchTrafficCams(), scrapeDOTCameras()]);
+      const allCams = [...otcCams, ...dotCams];
+      logger.info('APP', `Traffic cams: ${otcCams.length} (OTC) + ${dotCams.length} (DOT) = ${allCams.length} total`);
+      allCams.forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
+    } catch (e) { logger.warn('APP', 'Traffic cam load failed', e); }
+  }
+
+  // Lazy-load traffic when user switches to traffic tab or toggles traffic layer
+  const origShowOnly = showOnlyLayer;
+  (window as any).showOnlyLayer = (layer: string) => { if (layer === 'traffic') loadTrafficCameras(); origShowOnly(layer); };
+  const origToggleLayer = toggleLayer;
+  (window as any).toggleLayer = (layer: string) => { if (layer === 'traffic') loadTrafficCameras(); return origToggleLayer(layer); };
 
   // Map click → show related events within 200km
   getMap().on('click', (e: any) => {
@@ -776,11 +787,11 @@ export async function initApp() {
     }
   });
 
-  // Start tracking (flights, satellites, ships)
-  try { initTracking(); } catch (e) { console.warn('Tracking init failed:', e); }
-
-  // Enable jet streams by default
-  setTimeout(() => { toggleWindParticles(); const btn = document.getElementById('windy-particle-btn'); if (btn) btn.classList.add('on'); }, 2000);
+  // Defer heavy features to after page is interactive
+  setTimeout(() => {
+    try { initTracking(); } catch (e) { console.warn('Tracking init failed:', e); }
+    setTimeout(() => { toggleWindParticles(); const btn = document.getElementById('windy-particle-btn'); if (btn) btn.classList.add('on'); }, 5000);
+  }, 3000);
 
   // Initial fetch + periodic refresh
   refreshAll();
