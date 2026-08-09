@@ -768,16 +768,24 @@ export async function initApp() {
     }
   });
 
-  // Load traffic cameras from scraper cache (fast, always available)
+  // Load traffic cameras: try cache first, fallback to live API
   (async () => {
+    const tLayer = layers.get('traffic');
+    if (!tLayer) return;
     try {
-      const tLayer = layers.get('traffic');
-      if (!tLayer) return;
       const res = await fetch('/cameras-cache.json');
       const cams = await res.json();
-      cams.forEach((c: any) => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
-      console.log(`Traffic cams: ${cams.length} from cache`);
-    } catch (e) { console.warn('Traffic cam cache load failed', e); }
+      if (cams.length > 0) {
+        cams.forEach((c: any) => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
+        console.log(`Traffic cams: ${cams.length} from cache`);
+        return;
+      }
+    } catch {}
+    // Fallback: fetch live
+    try {
+      const [otc, dot] = await Promise.all([fetchTrafficCams(), scrapeDOTCameras()]);
+      [...otc, ...dot].forEach(c => createTrafficMarker(c.latitude, c.longitude, c.description, c.url, c.format, c.state || '').addTo(tLayer.group));
+    } catch {}
   })();
 
   // Defer heavy features to after page is interactive
