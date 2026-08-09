@@ -6,7 +6,7 @@
   "description": "🐱 Miau Surveillance Free — Surveillance Toolkit built by cats, made in Germany",
   "scripts": {
     "dev": "vite --port 5199 --host",
-    "build": "tsc && vite build",
+    "build": "test -f src/api/windy-keys.ts || cp src/api/windy-keys.example.ts src/api/windy-keys.ts; tsc && vite build",
     "preview": "node server.cjs",
     "start": "node server.cjs",
     "test": "vitest run",

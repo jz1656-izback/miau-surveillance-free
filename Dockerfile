@@ -4,6 +4,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --production=false 2>/dev/null || npm install
 COPY . .
+# Create windy-keys.ts from example if missing
+RUN test -f src/api/windy-keys.ts || cp src/api/windy-keys.example.ts src/api/windy-keys.ts
 RUN npm run build
 
 # ── Production stage ──
